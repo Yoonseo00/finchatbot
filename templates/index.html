@@ -1,0 +1,78 @@
+{% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
+
+{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
+    <h1 class="section-title">[최근 3개월 소비 분석]</h1>
+    <hr>
+
+    <div class="graph-container">
+        <div class="graph">
+            <img src="data:image/png;base64,{{ graph }}" alt="그래프">
+        </div>
+
+        <div class="monthly-summary">
+            <h2>[최근 3개월 총 소비금액]</h2>
+            <table class="monthly-table">
+                <tr>
+                    <th>월</th>
+                    <th>총 소비 금액</th>
+                </tr>
+                {% for month,total in monthly_total_expense.items() %}
+                <tr>
+                    <td>{{ month }}</td>
+                    <td>{{ '%.1f'|format(total) }}원</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="exceeded-category-text">
+        <h2 class="section-title">초과 지출</h2>
+        {% for category, excess in exceeded_categories.items() %}
+        <li>
+            이번 달 '{{ category }}' 카테고리에 최근 3개월 평균 소비보다 {{ '%.1f'|format(excess) }}원 초과했습니다.
+        </li>
+        {% endfor %}
+    </div>
+
+    <h1 class="section-title">[연령대별 평균 소비 금액과 이번 달 소비 금액 비교]</h1>
+    <form method="post" class="age-selection-form">
+        <label for="age_group">연령대 선택:</label>
+        <select name="age_group" id="age_group">
+            <option value="20대">10대</option>
+            <option value="20대">20대</option>
+            <option value="30대">30대</option>
+            <option value="40대">40대</option>
+            <option value="50대">50대</option>
+            <option value="60대">60대</option>
+            <option value="70대 이상">70대 이상</option>
+        </select>
+        <button type="submit" class="compare-button">비교</button>
+    </form>
+    {% if comparison_graph %}
+    <div class="graph-container">
+        <div class="graph">
+        {% for graph_url in comparison_graph %}
+            <img src="data:image/png;base64, {{ graph_url }}" alt="소비 금액 비교 그래프">
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="savings-text">
+        {% if comparison_graph and not exceeded_categories_avg %}
+        <p>또래보다 아껴쓰고 있어요!</p>
+        {% elif exceeded_categories_avg %}
+        <h2 class="section-title">또래와 비교한 초과 지출 카테고리</h2>
+        <ul>
+            {% for category, excess in exceeded_categories_avg.items() %}
+                <li>
+                    이번 달 '{{ category }}' 카테고리에 또래보다 {{ '%.1f'|format(excess) }}원 더 사용했습니다.
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
