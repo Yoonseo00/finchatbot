@@ -6,7 +6,7 @@ header {
     height: 60px;
     padding: 1rem;
     color: white;
-    background: teal;
+    background: lightgray;
     font-weight: bold;
     display: flex;
     justify-content: space-between;

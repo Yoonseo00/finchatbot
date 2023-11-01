@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href=" {{ url_for('static', filename='css/header.css') }}">
     <title>임시 메인</title>
 </head>
 <header>
-    <link rel="stylesheet" href="header.css">
-    <button type="button" class="btm_image" id="plus"><img src=plus.png onClick="location.href='AddSpend.html'"></button>
+    <a href ="{{ url_for('AddSpend') }}"> <button>소비내역추가</button> </a>
     <h1>임시 메인</h1>
 </header>
 <body>
-    <input type="Button" value="과소비 알림" onClick="location.href='Alarm.html'"></button>
+    <a href ="{{ url_for('Alarm') }}"> <button>과소비 알림</button> </a>
 </body>
 </html>
