@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>목표 예산 설정</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <style>
+        .container {
+            border: 1px solid #ccc;
+            padding: 100px;
+            display: flex;
+            flex-direction: column; /* 내부 요소를 수직으로 정렬 */
+            align-items: center; /* 수평 가운데 정렬 */
+            justify-content: center; /* 수직 가운데 정렬 */
+            width: 250px; /* 가로 너비 */
+            margin: 143px auto; /* 수평 가운데 정렬 */
+        }
+
+        input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        .currency {
+            font-weight: bold;
+        }
+        
+        .input-container {
+            display: flex; /* 입력 필드와 "원" 텍스트를 수평으로 정렬 */
+            align-items: center; /* 수평 가운데 정렬 */
+        }
+
+        h3 {text-align: center;}
+        .img {text-align: center;}
+        .img2, .img4 {display: inline-block;}
+        .img2 {float: left;}
+        .img4 {float: right;}
+    </style>
+</head>
+<body>
+    <header>
+        <h3>목표 예산 설정</h3>
+    </header>
+
+    <main>
+        <div class="container">
+            {% if message %}
+                <p>{{ message }}</p>
+            {% else %}
+                <label class="currency">목표 예산</label><br>
+                <form method="POST" action="/set_budget">
+                    <div class="input-container">
+                        <input type="text" id="budgetAmount" name="budgetAmount" placeholder="목표 예산을 입력하세요">
+                        <span class="currency">원</span>
+                    </div>
+                    <div style="text-align: center;">
+                        <button type="submit">확인</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>  
+        <div class="img">
+            <div class="img2">
+                <img src="../static/img/2.png" width="70" height="70">
+            </div>
+            <div class="img4">
+                <img src="../static/img/4.png" width="70" height="70">
+            </div>
+            <div class="img3">
+                <img src="../static/img/3.png" width="70" height="70">
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
