@@ -1,0 +1,14 @@
+/* header에 배경색 적용 */
+header {
+    background-color: #CACACA; /* 배경색 코드를 원하는 색상으로 변경하세요 */
+    padding: 10px; /* header 내부 여백 설정 */
+    margin: 0;
+}
+
+/* footer에 배경색 적용 */
+footer {
+    background-color: #CACACA; /* 배경색 코드를 원하는 색상으로 변경하세요 */
+    padding: 10px; /* footer 내부 여백 설정 */
+    margin: 0;
+}
+
