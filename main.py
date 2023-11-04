@@ -17,10 +17,6 @@ def AddSpend():
 def SpendList():
     return render_template("SpendList.html")
 
-@app.route('/')
-def test():
-    return render_template('AddR.html')
-
 @app.route('/result', methods = ['POST', 'GET'])
 def result():
     if request.method == 'POST':
