@@ -1,0 +1,52 @@
+/* 스타일링을 위한 기본 CSS */
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    position: relative;
+    margin-bottom: 70px;
+}
+
+.top-bar, .bottom-bar{
+    height: 50px;
+}
+
+/* 상단바 스타일링 */
+.top-bar {
+    background-color: #a6a6a6;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.top-bar h1 {
+    color: #000000;
+    margin:0;
+}
+
+/* 하단바 스타일링 */
+.bottom-bar {
+    background-color: #a6a6a6;
+    color: #000000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+}
+
+.button {
+    text-align: center;
+    padding: 10px;
+    flex-grow: 1;
+    display: inline-block;
+}
+
+.button img {
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+    width: 40px;
+    height: 40px
+}
+
