@@ -3,13 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
-plt.rcParams['font.family'] ='Malgun Gothic'
-plt.rcParams['axes.unicode_minus'] =False
+
 
 app = Flask(__name__)
 
-@app.route('/')
-def display_budget():
+def budget_data():
     # CSV 파일에서 데이터 읽기
     csv_data = pd.read_csv('budget_data.csv')  # CSV 파일명은 실제 파일명으로 수정해야 합니다
 
@@ -20,9 +18,18 @@ def display_budget():
     # 예산 사용률 계산
     budget_percentage = (Spent / Budget) * 100 if Budget > 0 else 0
 
+    return Budget, Spent, budget_percentage
+
+
+def display_budget():
+
+    Budget, Spent,budget_percentage=budget_data()
     # 원 그래프 데이터 생성
     data = [Budget - Spent, Spent]
     categories = ['남은 예산', '총 소비금액']
+
+    plt.rcParams['font.family'] ='Malgun Gothic'
+    plt.rcParams['axes.unicode_minus'] =False
 
     # 원 그래프 생성
     fig, ax = plt.subplots()
@@ -33,9 +40,6 @@ def display_budget():
     img = BytesIO()
     fig.savefig(img, format='png')
     img.seek(0)
-    img_b64 = base64.b64encode(img.getvalue()).decode('utf-8')
+    graph_url = base64.b64encode(img.getvalue()).decode()
 
-    return render_template('budget.html', img_data=img_b64, Budget=Budget, Spent=Spent, budget_percentage=budget_percentage)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return graph_url
