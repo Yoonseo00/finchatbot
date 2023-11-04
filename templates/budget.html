@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>메인화면</title>
-        <link rel="stylesheet" href="../static/css/styles.css">
+        <link rel="stylesheet" href="../static/css/styles2.css">
         <style>
             .container {
             display: flex;
@@ -23,7 +23,7 @@
         </style>
     </head>
     <body>
-        <header>
+        <header class="top-bar">
             <div class="container">
                 <a href=""><img src="../static/img/plus.png" width="70" height="70"></a>
                 
@@ -54,18 +54,16 @@
                 <p>목표 예산의 {{ budget_percentage }}%를 사용했습니다.</p>
             </div>
         </main>
-        <footer>
-            <div class="img">
-                <div class="img2">
-                    <img src="../static/img/2.png" width="70" height="70">
-                </div>
-                <div class="img4">
-                    <img src="../static/img/4.png" width="70" height="70">
-                </div>
-                <div class="img3">
-                    <img src="../static/img/3.png" width="70" height="70">
-                </div>
-            </div>
+        <footer class="bottom-bar">
+            <nav class="button">
+                <img src="../static/img/menu.png" alt="메뉴">
+            </nav>
+            <nav class="button">
+                <img src="../static/img/home.png" alt="홈">
+            </nav>
+            <nav class="button">
+                <img src="../static/img/graph.png" alt="그래프">
+            </nav>
         </footer>
     </body>
 </html>
