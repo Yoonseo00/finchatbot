@@ -228,7 +228,7 @@ def generate_comparison_graph(age_category_data, current_month_data):
 
 
 @app.route('/', methods=['GET', 'POST'])
-def main():
+def graph():
     df = load_data('C:/finchatbot/exdata.csv')
     category_avg=category_avg_for_last_3_months(df)
     graph = generate_graph(df)
