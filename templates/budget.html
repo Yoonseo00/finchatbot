@@ -50,7 +50,7 @@
             <div class="goal">
                 <p>목표 예산: {{ Budget }} 원</p>
                 <p>총 소비 금액: {{ Spent }} 원</p>
-                <img src="../static/img/graph4.png" width="350" height="350">
+                <img src="data:image/png;base64,{{ img_data }}" alt="Budget and Spent Chart">
                 <p>목표 예산의 {{ budget_percentage }}%를 사용했습니다.</p>
             </div>
         </main>
