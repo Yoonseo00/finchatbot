@@ -1,0 +1,203 @@
+/* 스타일링을 위한 기본 CSS */
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    position: relative;
+    margin-bottom: 70px;
+}
+
+.top-bar, .bottom-bar{
+    height: 50px;
+}
+
+/* 상단바 스타일링 */
+.top-bar {
+    background-color: #a6a6a6;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.top-bar h1 {
+    color: #000000;
+    margin:0;
+}
+
+/* 하단바 스타일링 */
+.bottom-bar {
+    background-color: #a6a6a6;
+    color: #000000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+}
+
+.button {
+    text-align: center;
+    padding: 10px;
+    flex-grow: 1;
+    display: inline-block;
+}
+
+.button img {
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+    width: 40px;
+    height: 40px
+}
+
+
+.graph-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* 그래프와 테이블 간 간격 조정 */
+}
+.graph {
+    flex: 1;
+}
+
+.monthly-summary {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 20px; /* 그래프와 테이블 사이의 간격 조정 */
+    width:100%
+}
+
+/* 월별 총 소비 테이블 */
+.monthly-summary table {
+    width: 70%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff; /* 테이블 배경색 추가 */
+    border: 1px solid #ccc; /* 테이블 테두리 추가 */
+    border-radius: 5px; /* 테이블 테두리 둥글게 만듦 */
+}
+
+.monthly-summary th, .monthly-summary td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.monthly-summary th {
+    background-color: #007BFF; /* 파란색 배경 */
+    color: #fff;
+}
+
+/* 초과 지출 텍스트 */
+.exceeded-category-text {
+    margin: 20px auto;
+    text-align: center;
+    border: 2px solid #f00; /* 테두리 추가 및 색상 지정 */
+    background-color: hsl(0, 81%, 94%); /* 배경색 지정 */
+    padding: 20px; /* 텍스트 내용 주변에 간격 추가 */
+    border-radius: 10px; /* 테두리 모서리 둥글게 만들기 */
+
+}
+
+.exceeded-category-text h2 {
+    color: #000;
+    font-size: 28px; /* 원하는 글꼴 크기로 조정 */
+    text-align: center;
+    margin-top: 0; /* 위쪽 간격 제거 */
+}
+
+.exceeded-category-text li {
+    margin: 10px 0;
+    font-size: 20px;
+}
+
+.age-selection-form::before {
+    content: '';
+    display: block;
+    border-top: 1px solid #ccc;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.age-selection-form {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.age-selection-form label {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.age-selection-form select {
+    font-size: 18px;
+}
+
+.age-selection-form .compare-button {
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.savings-text {
+    border: 2px solid #007BFF; /* 테두리 추가 및 색상 지정 */
+    background-color: #E5F0FF; /* 배경색 지정 */
+    padding: 20px; /* 텍스트 내용 주변에 간격 추가 */
+    border-radius: 10px; /* 테두리 모서리 둥글게 만들기 */
+    margin-top: 20px; /* 위쪽 간격 추가 */
+    margin-bottom: 20px; /* 아래쪽 간격 추가 */
+}
+
+.savings-text h2 {
+    font-weight: bold; /* 텍스트 두꺼움 추가 */
+    color: #000; /* 제목 색상 지정 */
+    font-size: 24px; /* 원하는 글꼴 크기로 조정 */
+    text-align: center;
+    margin-top: 0; /* 위쪽 간격 제거 */
+    margin-bottom: 20px; /* 아래쪽 간격 추가 */
+}
+
+.savings-text li {
+    margin: 10px 0;
+    font-size: 20px;
+}
+
+.savings-text p {
+    font-size: 20px; /* 텍스트 크기 조정 */
+    margin: 10px 0;
+}s
+
+
+
+h1 {
+    font-size: 28px; /* Adjust the font size as needed */
+    color: #333;
+    text-align:left;
+    margin-top: auto;
+    margin-bottom: 10px; /* Add spacing above and below */
+}
+
+
+h2 {
+    font-size: 24px; /* Adjust the font size as needed */
+    color: #555; /* Text color */
+    text-align: left; /* Adjust alignment as needed */
+    margin: 20px 0; /* Add spacing above and below */
+}
+
+
+
+/* 모바일 화면에 대한 미디어 쿼리 */
+@media (max-width: 768px) {
+    .top-bar, .bottom-bar {
+        font-size: 18px;
+    }
+}
