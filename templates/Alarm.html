@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href=" {{ url_for('static', filename='css/header.css') }}">
-    <title>과소비 알리미</title>
-</head>
-<header>
-    <h1>과소비 알리미</h1>
-</header>
-<body>
+{% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
+{% block header_content %}과소비 알림{% endblock %}
+
+{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
     <h3>해당 월의 목표 예산을 초과했습니다.<br>챗봇에게 조언을 구해보세요!</h3>
         <input type="submit" value="확인">
     </form>
-</body>
-</html>
+
+{% endblock %}

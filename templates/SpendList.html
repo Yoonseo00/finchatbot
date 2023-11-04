@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href=" {{ url_for('static', filename='css/header.css') }}">
-    <title>상세 소비내역</title>
-</head>
-<header>
+{% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
+{% block header_content %}상세 소비내역{% endblock %}
+
+{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
+
     <input type="month" required>
     <h1>상세 소비내역</h1>
-</header>
-<body>
-</body>
-</html>
+
+{% endblock %}

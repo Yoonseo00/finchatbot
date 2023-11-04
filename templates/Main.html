@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href=" {{ url_for('static', filename='css/header.css') }}">
-    <title>임시 메인</title>
-</head>
-<header>
+{% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
+{% block header_content %}임시 메인{% endblock %}
+
+{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
+
+
     <a href ="{{ url_for('AddSpend') }}"> <button>소비내역추가</button> </a>
-    <h1>임시 메인</h1>
-</header>
-<body>
+
     <a href ="{{ url_for('Alarm') }}"> <button>과소비 알림</button> </a>
-</body>
-</html>
+
+{% endblock %}

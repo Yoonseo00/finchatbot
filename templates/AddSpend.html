@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>소비내역 추가</title>
-</head>
-<header>
-    <link rel="stylesheet" href=" {{ url_for('static', filename='css/header.css') }}">
-    <h1>소비내역 추가</h1>
-</header>
-<body>
+{% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
+{% block header_content %}소비내역 추가{% endblock %}
+
+{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
     <form action = "http://localhost:5000/result" method="post">
         <label for="date">날짜:</label>
         <input type="date" id="date" required><br><br>
 
         <label for="category">카테고리:</label>
-        <head></head>
-        <body>
+        
+        
             <select>
                 <option value="food">식비</option>
                 <option value="cafe">카페</option>
@@ -24,10 +18,9 @@
                 <option value="travel">여행</option>
                 <option value="medical">의료</option>
             </select>
-        </body><br><br>
+        <br><br>
 
         <label for="price">소비금액:</label>
-        <link rel="stylesheet" href=" {{ url_for('static', filename='css/placeholder.css') }}">
         <input type="number" id="price" placeholder="숫자만 입력하세요" required>원<br><br>
 
         <label for="place">사용처:</label>
@@ -35,5 +28,5 @@
 
         <input type="submit" value="추가하기">
     </form>
-</body>
-</html>
+
+{% endblock %}
