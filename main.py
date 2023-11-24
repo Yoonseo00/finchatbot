@@ -1,5 +1,12 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, url_for, request, redirect
+import pymysql
+
 app = Flask(__name__)
+app.secret_key = 'sample_secret'
+
+def connectsql():
+    conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
+    return conn
 
 import graph1
 import graph3
@@ -8,6 +15,68 @@ import graph3
 @app.route('/main')
 def Main():
     return render_template('Main.html')
+
+#로그아웃
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for(''))
+
+#로그인
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        userid = request.form['id']
+        userpw = request.form['pw']
+
+        logininfo = request.form['id']
+        conn = connectsql()
+        cursor = conn.cursor()
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        value = (userid, userpw)
+        cursor.execute(query, value)
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        for row in data:
+            data = row[0]
+        
+        if data:
+            session['username'] = request.form['id']
+            session['password'] = request.form['pw']
+            return render_template('loginSuccess.html', logininfo = logininfo)
+        else:
+            return render_template('loginError.html')
+    else:
+        return render_template ('login.html')
+
+#회원가입
+@app.route('/regist', methods=['GET', 'POST'])
+def regist():
+    if request.method == 'POST':
+        userid = request.form['id']
+        userpw = request.form['pw']
+
+        conn = connectsql()
+        cursor = conn.cursor()
+        query = "SELECT * FROM users WHERE username = %s"
+        value = userid
+        cursor.execute(query, value)
+        data = (cursor.fetchall())
+        if data:
+            return render_template('registError.html') 
+        else:
+            query = "INSERT INTO users (username, password) values (%s, %s)"
+            value = (userid, userpw)
+            cursor.execute(query, value)
+            data = cursor.fetchall()
+            conn.commit()
+            return render_template('registSuccess.html')
+        cursor.close()
+        conn.close()
+    else:
+        return render_template('regist.html')
 
 #과소비알림페이지
 @app.route('/alarm')
