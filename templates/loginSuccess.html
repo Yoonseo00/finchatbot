@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="static/css/style.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+		
+		<title></title>
+	</head>
+    <body>	
+					<div class="container">
+					{% if logininfo %}
+					<h5>환영합니다. <strong>{{logininfo}}님</strong></h5>
+					<a href="/login">로그아웃</a>
+					<a href="/addspend">소비내역추가</a>
+    				<a href ="/alarm"> <button>과소비 알림</button> </a>
+					{% endif %}
+				</div>
+				</div>
+			</div>
+    </body>
+</html>
