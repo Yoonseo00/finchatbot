@@ -17,6 +17,11 @@ import consume_report
 import advicee
 import counsell
 
+#임시(페이지 이동을 위한 페이지)
+@app.route('/main')
+def Main():
+    return render_template('Main.html')
+
 #로그아웃
 @app.route('/logout')
 def logout():
