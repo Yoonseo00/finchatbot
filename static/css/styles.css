@@ -263,26 +263,32 @@ h2 {
 .input-container {
     text-align: center;
     margin-top: 20px;
+}
+
+.input-container form {
     display: flex;
+    align-items: center;
     justify-content: center;
 }
 
 .input-container input[type="text"] {
-    padding: 10px;
+    padding: 15px;
     border-radius: 25px;
     border: 1px solid #ccc;
-    width: calc(100% - 60px); /* 화면 전체 너비에 맞게 조정 */
-    max-width: 500px; /* 최대 너비 설정 */
-    box-sizing: border-box; /* 패딩까지 포함한 크기 설정 */
+    box-sizing: border-box;
+    width: calc(70% - 40px); /* 입력창 너비 설정 */
+    max-width: 500px;
+    margin-right: 10px; /* 입력창과 버튼 간격 조절 */
 }
 
 .input-container button {
-    padding: 10px 20px;
+    padding: 15px 30px;
     border-radius: 5px;
     border: none;
     cursor: pointer;
     background-color: rgba(185, 185, 185, 0.229);
     color: black;
+    width: 130px; /* 버튼의 너비 설정 */
 }
 
 button {
@@ -304,7 +310,7 @@ a:hover {
     text-decoration: underline;
 }
 
-.chat-body form {
+.reportt {
     /* 폼 요소의 스타일을 수정합니다. */
     display: flex;
     flex-direction: column;

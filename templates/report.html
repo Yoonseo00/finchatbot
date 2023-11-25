@@ -9,7 +9,7 @@
     <div class="chat-body" id="chatBody">
         <div class="message bot-message">한 달 동안 어떻게 소비를 했는지 궁금하셨군요!</div>
         <div class="message bot-message">조회하실 기간을 선택해주세요.</div>
-        <form action="/report" method="GET">
+        <form class="reportt" action="/report" method="GET">
             <label for="year">년:</label>
             <select id="year" name="year">
                 {% for year in range(2023, 1910, -1) %}
