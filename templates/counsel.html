@@ -1,10 +1,6 @@
-User
 {% extends "layout.html" %}
-
 {% block header_content %}챗봇과 대화해보세요!{% endblock %}
-
 {% block content %}
-
 
 <div class="chat-container">
     <div class="chat-header">finchatbot</div>
@@ -12,18 +8,18 @@ User
 
         <div class="message bot-message"> {{ initial_message| safe }} </div>
 
-        {% if system_message %}
-        <div class="message bot-message" id="responseMessageContent">
-            {{ system_message }}
+        <div class="message user-message" id="userMessageContent" style="display: none;">
+            사용자: <!-- 수정: 사용자 메시지를 출력 -->
         </div>
 
-        <div class="message bot-message" id="loadingMessage" style="display: none;">
-            로딩 중...
+        {% if system_message %}
+        <div class="message bot-message" id="responseMessageContent"> 
+            {{ system_message }}
         </div>
         {% endif %}
 
-        <div class="message user-message" id="userMessageContent" style="display: none;">
-            사용자: <!-- 수정: 사용자 메시지를 출력 -->
+        <div class="message bot-message" id="loadingMessage" style="display: none;">
+            로딩 중...
         </div>
 
         <div class="input-container" id="inputContainer">
@@ -33,6 +29,9 @@ User
             </form>
         </div>
 
+        <div class="message bot-message" id="chatHistoryContent" style="display: none;">
+            <!-- 이전 대화 내용을 출력할 상자 -->
+        </div>
 
     </div>
 </div>
@@ -57,8 +56,9 @@ User
         document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
 
         // 입력 폼 비우기
-        document.getElementById('textInput').value = '';
+        document.getElementById('textinput').value = '';
 
+        return false;
     }
 
     // 서버에서 소켓 이벤트를 수신하여 결과를 표시
@@ -67,7 +67,18 @@ User
         hideLoadingMessage();
 
         if (data.bot_message) {
-            document.getElementById('responseMessageContent').innerText += '\n\n' + data.bot_message;
+            // 새로운 메시지 요소 생성
+            const newMessage = document.createElement('div');
+            newMessage.className = 'message bot-message';
+            newMessage.innerText = data.bot_message;
+
+            // 기존 채팅방에 새로운 메시지 추가
+            const chatBody = document.getElementById('chatBody');
+            chatBody.appendChild(newMessage);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // 이전 대화 내용 상자 표시
+            document.getElementById('chatHistoryContent').style.display = 'block';
         }
     });
 
@@ -89,4 +100,4 @@ User
 
 </script>
 
-{% endblock %} 
+{% endblock %}

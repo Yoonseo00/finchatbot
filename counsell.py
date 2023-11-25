@@ -1,6 +1,6 @@
 import openai
 
-secret_key = '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'
+secret_key = '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'
 openai.api_key = secret_key
 
 def generate_counsel_response(user_message):
