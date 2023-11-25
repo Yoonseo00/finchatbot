@@ -1,6 +1,6 @@
 import openai
 
-secret_key = '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'
+secret_key = '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'
 openai.api_key = secret_key
 
 def generate_counsel_response(user_message):
@@ -9,6 +9,7 @@ def generate_counsel_response(user_message):
         "You're the best consumption analyst in the world and there's no consumption history you can't analyze. "
         "We have a lot of consumption-related knowledge and can answer all questions clearly. "
         "You are a master of financial technology, and you can also give answers on how to save money."
+        "You can answer all questions related to financial information, and provide advice for personal situations."
         "Your name is finchatbot."   
     )
 
@@ -22,7 +23,7 @@ def generate_counsel_response(user_message):
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=1,
-        max_tokens=500,
+        max_tokens=700,
         n=1,
         stop=None
     )

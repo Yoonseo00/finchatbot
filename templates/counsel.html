@@ -1,29 +1,27 @@
-User
 {% extends "layout.html" %}
 
 {% block header_content %}챗봇과 대화해보세요!{% endblock %}
 
 {% block content %}
 
-
 <div class="chat-container">
     <div class="chat-header">finchatbot</div>
     <div class="chat-body" id="chatBody">
 
-        <div class="message bot-message"> {{ initial_message| safe }} </div>
+        <div id="messageContent">
+            <!-- 대화 메시지가 여기에 추가됩니다 -->
 
-        {% if system_message %}
-        <div class="message bot-message" id="responseMessageContent">
-            {{ system_message }}
-        </div>
+            <div class="message bot-message"> {{ initial_message|safe }} </div>
 
-        <div class="message bot-message" id="loadingMessage" style="display: none;">
-            로딩 중...
-        </div>
-        {% endif %}
+            {% if system_message %}
+            <div class="message bot-message" id="responseMessageContent">
+                {{ system_message }}
+            </div>
+            <div class="message bot-message" id="loadingMessage" style="display: none;">
+                로딩 중...
+            </div>
+            {% endif %}
 
-        <div class="message user-message" id="userMessageContent" style="display: none;">
-            사용자: <!-- 수정: 사용자 메시지를 출력 -->
         </div>
 
         <div class="input-container" id="inputContainer">
@@ -33,7 +31,6 @@ User
             </form>
         </div>
 
-
     </div>
 </div>
 
@@ -42,7 +39,22 @@ User
 
     var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-    // 입력 완료 시 사용자의 입력을 서버로 전송
+    function displayMessage(message, className) {
+        var messageContent = document.getElementById('messageContent');
+        if (messageContent) {
+            var newMessage = document.createElement('div');
+            newMessage.className = 'message ' + className;
+            newMessage.textContent = message;
+            messageContent.appendChild(newMessage);
+
+            // 스크롤을 가장 아래로 이동
+            document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+        }
+    }
+
+    // 초기 메시지 표시
+    displayMessage("{{ initial_message|safe }}", 'bot-message');
+
     function sendUserInput() {
         const userInput = document.getElementById('user_input').value;
 
@@ -51,23 +63,16 @@ User
 
         socket.emit('user_input', { message: userInput });
 
-        // 사용자 메시지를 출력
-        document.getElementById('userMessageContent').innerText = '사용자: ' + userInput;
-        document.getElementById('userMessageContent').style.display = 'block';
-        document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
-
-        // 입력 폼 비우기
-        document.getElementById('textInput').value = '';
-
+        // 사용자 메시지를 추가
+        displayMessage('사용자: ' + userInput, 'user-message');
     }
 
-    // 서버에서 소켓 이벤트를 수신하여 결과를 표시
     socket.on('user_input_response', function (data) {
-        // 로딩 메시지 숨기기
         hideLoadingMessage();
 
         if (data.bot_message) {
-            document.getElementById('responseMessageContent').innerText += '\n\n' + data.bot_message;
+            // 챗봇 응답을 추가
+            displayMessage('챗봇: ' + data.bot_message, 'bot-message');
         }
     });
 
@@ -89,4 +94,4 @@ User
 
 </script>
 
-{% endblock %} 
+{% endblock %}

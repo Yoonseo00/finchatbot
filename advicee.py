@@ -1,6 +1,6 @@
 import openai
 
-secret_key = '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'
+secret_key = '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'
 openai.api_key = secret_key
 
 def generate_advice_response(user_message, current_month_data, current_category_data, current_exceed_category):
@@ -24,7 +24,7 @@ def generate_advice_response(user_message, current_month_data, current_category_
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=1,
-        max_tokens=500,
+        max_tokens=700,
         n=1,
         stop=None
     )
