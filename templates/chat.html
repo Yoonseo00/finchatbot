@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block header_content %}챗봇과 대화해보세요!{% endblock %}
+
+{% block content %}
+
+    <div class="chat-container">
+        <div class="chat-header">finchatbot</div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot-message">안녕하세요. finchatbot입니다. 궁금한 내용을 선택해주세요!</div>
+            <div class="message bot-message" onclick="selectOption('report')" style="cursor: pointer;">
+                <p>1. 소비 리포트</p>
+            </div>
+            <div class="message bot-message" onclick="selectOption('card')" style="cursor: pointer;">
+                <p>2. 카드 상품 추천</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectOption(option) {
+            window.location.href = option === "report" ? "/report" : "/card";
+        }
+    </script>
+
+{% endblock %}
