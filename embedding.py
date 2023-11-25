@@ -35,4 +35,7 @@ card_data['embedding'] = card_data['내용'].apply(embed_card_benefits)
 
 # 임베딩 값을 저장한 CSV 파일로 저장
 card_data.to_csv('C:/finchatbot/embedded_card_data.csv', index=False)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 21b134ddd316b5e53174f5499b1d24184913dc98

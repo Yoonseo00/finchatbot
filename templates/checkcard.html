@@ -106,6 +106,23 @@
             border: none;
             cursor: pointer;
         }
+        .chat-icon-container {
+            position: fixed;
+            bottom: 120px; /* 원하는 위치로 조절 */
+            right: 35px; /* 원하는 위치로 조절 */
+            z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
+        }
+        
+        .chat-icon {
+            width: 110px; /* 아이콘의 크기 조절 */
+            height: 110px; /* 아이콘의 크기 조절 */
+            border-radius: 50%; /* 동그란 모양으로 만들기 */
+            background-color: #d6edfb; /* 배경 색상 설정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -191,6 +208,12 @@
             }
         </script>
     </main>
+
+    <div class="chat-icon-container">
+        <a href="/chat" class="chat-icon">
+            <img src="../static/img/chatbot.png" alt="챗봇" style="width: 110px; height: 110px; border-radius: 50%;">
+        </a>
+    </div>
 
     <footer class="bottom-bar">
         <nav class="button">

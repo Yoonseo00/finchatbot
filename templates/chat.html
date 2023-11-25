@@ -11,16 +11,33 @@
             <div class="message bot-message" onclick="selectOption('report')" style="cursor: pointer;">
                 <p>1. 소비 리포트</p>
             </div>
-            <div class="message bot-message" onclick="selectOption('card')" style="cursor: pointer;">
+            <div class="message bot-message" onclick="window.location.href='/cardopt'" style="cursor: pointer;">
                 <p>2. 카드 상품 추천</p>
             </div>
+<<<<<<< HEAD
+=======
+            <div class="message bot-message" onclick="selectOption('counsel')" style="cursor: pointer;">
+                <p>3. 챗봇과의 소비 상담 </p>
+            </div>
+>>>>>>> 21b134ddd316b5e53174f5499b1d24184913dc98
         </div>
     </div>
 
     <script>
         function selectOption(option) {
+<<<<<<< HEAD
             window.location.href = option === "report" ? "/report" : "/card";
         }
+=======
+            if (option === "report") {
+            window.location.href = "/report";
+            } else if (option === "card") {
+            window.location.href = "/card";
+            } else if (option === "counsel") {
+            window.location.href = "/counsel"; 
+            }
+         }
+>>>>>>> 21b134ddd316b5e53174f5499b1d24184913dc98
     </script>
 
 {% endblock %}

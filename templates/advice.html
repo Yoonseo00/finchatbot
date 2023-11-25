@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block header_content %}챗봇과 대화해보세요!{% endblock %}
+
+{% block content %}
+
+    <div class="chat-container">
+        <div class="chat-header">finchatbot</div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot-message">소비 분석 및 소비 조언이 궁금하셨군요!</div>
+
+             <!-- 서버에서 받은 결과를 보여줄 영역 -->
+            <div class="message bot-message" id="loadingMessage" style="display: none;">로딩 중...</div>
+            <div id="responseMessage" style="display: none;">
+                <div class="message bot-message" id="responseMessageContent"></div>
+            </div>
+
+            <!-- 추가: 서버로 결과 요청하는 버튼 -->
+            <button id="adviceButton" onclick="requestAdvice()">소비 분석 및 소비 조언 요청</button>
+
+            <div class="message bot-message" id="quitButton" style="display: none; cursor: pointer;">
+                <p> 1. 소비 분석 종료 </p>
+            </div>
+            <div class="message bot-message" id="counselButton" style="display: none; cursor: pointer;">
+                <p> 2. 챗봇과의 추가적인 소비 상담 </p>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script>
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function requestAdvice() {
+            // 로딩 중 메시지 표시
+            document.getElementById('loadingMessage').style.display = 'block';
+
+            // 클라이언트에서 서버에 소켓 이벤트 발생
+            socket.emit('get_advice');
+    }
+
+        // 서버에서 소켓 이벤트를 수신하여 결과를 표시
+        socket.on('advice_response', function(data) {
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('responseMessage').style.display = 'block';
+            document.getElementById('responseMessageContent').innerText = data.system_message;
+
+            document.getElementById('adviceButton').style.display = 'none';
+
+            // 결과를 받았을 때에만 추가적인 상담 페이지로 이동할 수 있도록 버튼 활성화
+            document.getElementById('quitButton').style.display = 'block';
+            document.getElementById('counselButton').style.display = 'block';
+
+            // 소비 분석 종료 버튼 클릭 시
+            document.getElementById('quitButton').onclick = function() {
+            window.location.href = "/graph";
+            };
+
+            // 챗봇과의 추가적인 소비 상담 버튼 클릭 시
+            document.getElementById('counselButton').onclick = function() {
+            window.location.href = "/counsel";
+            
+            };
+        });
+
+    </script>
+
+{% endblock %}
