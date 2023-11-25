@@ -1,7 +1,18 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, url_for, request, redirect
+import pymysql
 from flask_socketio import SocketIO
+import pandas as pd
+from transformers import BertTokenizer, BertModel
+import torch
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
+app.secret_key = 'sample_secret'
+
+def connectsql():
+    conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
+    return conn
+
 socketio=SocketIO(app)
 
 import graph1
@@ -14,6 +25,68 @@ import counsell
 @app.route('/main')
 def Main():
     return render_template('Main.html')
+
+#로그아웃
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for(''))
+
+#로그인
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        userid = request.form['id']
+        userpw = request.form['pw']
+
+        logininfo = request.form['id']
+        conn = connectsql()
+        cursor = conn.cursor()
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        value = (userid, userpw)
+        cursor.execute(query, value)
+        data = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        for row in data:
+            data = row[0]
+        
+        if data:
+            session['username'] = request.form['id']
+            session['password'] = request.form['pw']
+            return render_template('loginSuccess.html', logininfo = logininfo)
+        else:
+            return render_template('loginError.html')
+    else:
+        return render_template ('login.html')
+
+#회원가입
+@app.route('/regist', methods=['GET', 'POST'])
+def regist():
+    if request.method == 'POST':
+        userid = request.form['id']
+        userpw = request.form['pw']
+
+        conn = connectsql()
+        cursor = conn.cursor()
+        query = "SELECT * FROM users WHERE username = %s"
+        value = userid
+        cursor.execute(query, value)
+        data = (cursor.fetchall())
+        if data:
+            return render_template('registError.html') 
+        else:
+            query = "INSERT INTO users (username, password) values (%s, %s)"
+            value = (userid, userpw)
+            cursor.execute(query, value)
+            data = cursor.fetchall()
+            conn.commit()
+            return render_template('registSuccess.html')
+        cursor.close()
+        conn.close()
+    else:
+        return render_template('regist.html')
 
 #과소비알림페이지
 @app.route('/alarm')
@@ -160,6 +233,76 @@ def counsel():
     initial_message = "안녕하세요. 저는 finchatbot이라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다.<br>또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요.<br>최선을 다해 도움을 드리도록 하겠습니다!"
 
     return render_template('counsel.html', initial_message=initial_message)
+
+@app.route('/cardopt')
+def index():
+    return render_template('cardopt.html')
+
+@app.route('/creditcard')
+def show_credit_card():
+    return render_template('creditcard.html')
+
+@app.route('/checkcard')
+def show_check_card():
+    return render_template('checkcard.html')
+
+@app.route('/selec')
+def show_selec_spend():
+    return render_template('selecspend.html')
+
+# KoBERT 관련 설정
+tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
+model = BertModel.from_pretrained("monologg/kobert")
+
+# KoBERT를 활용한 함수들
+def embed_user_response(user_response):
+    # 사용자 응답을 임베딩하는 함수
+    tokens = tokenizer.batch_encode_plus(user_response, return_tensors='pt', padding=True, truncation=True, max_length=512)
+    with torch.no_grad():
+        outputs = model(**tokens)
+    user_embedding = outputs.last_hidden_state.mean(dim=1)
+    return user_embedding
+
+def embed_card_benefits(card_benefits):
+    # 카드 혜택을 임베딩하는 함수
+    tokens = tokenizer.batch_encode_plus(card_benefits, return_tensors='pt', padding=True, truncation=True, max_length=512)
+    with torch.no_grad():
+        outputs = model(**tokens)
+    card_embedding = outputs.last_hidden_state.mean(dim=1)
+    return card_embedding
+
+def calculate_similarity(embedding1, embedding2):
+    # 유사도를 계산하는 함수
+    return cosine_similarity(embedding1, embedding2)[0][0]
+
+@app.route('/recom')
+def recom():
+    return render_template('recomcard.html')
+
+@app.route('/get_recommendation', methods=['POST'])
+def get_recommendation():
+    if request.method == 'POST':
+        user_preference = request.form['user_preference']
+
+        # 사용자 응답을 임베딩
+        user_embedding = embed_user_response([user_preference])
+
+        # embedded_card_data.csv 파일을 불러와 카드 혜택의 임베딩값을 저장
+        card_data = pd.read_csv('C:/finchatbot/embedded_card_data.csv')
+
+        # 유사도 계산 및 추천
+        best_match = None
+        highest_similarity = 0.0
+
+        for index, row in card_data.iterrows():
+            card_embedding = embed_card_benefits([row['embedding']])
+            similarity = calculate_similarity(card_embedding, user_embedding)
+
+            if similarity > highest_similarity:
+                highest_similarity = similarity
+                best_match = row['카드명']
+
+        return render_template('recomcard.html', recommendation=best_match, user_input=user_preference)
 
 
 if __name__ == '__main__':

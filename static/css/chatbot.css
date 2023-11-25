@@ -1,0 +1,113 @@
+.chat-container {
+    max-width: 100%;
+    margin: 20px auto;
+    height: 80vh;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header {
+    background-color: #2991ff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.chat-body {
+    height: 80vh;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    margin-bottom: 10px;
+    font-size: large;
+}
+
+.user-message {
+    background-color: #2991ff;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    float: right;
+}
+
+.bot-message {
+    background-color: #ddd;
+    padding: 8px;
+    border-radius: 5px;
+    float: left;
+}
+
+.input-container {
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+input {
+    width: 80%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    width: 18%;
+    padding: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.chat-body form {
+    /* 폼 요소의 스타일을 수정합니다. */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.chat-body form label {
+    /* 레이블의 스타일을 수정합니다. */
+    margin-bottom: 5px;
+}
+
+.chat-body form select {
+    /* 선택란의 스타일을 수정합니다. */
+    width: 80%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.chat-body form button {
+    /* 버튼의 스타일을 수정합니다. */
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-body form button:hover {
+    /* 마우스 호버 시 스타일을 수정합니다. */
+    background-color: #45a049;
+}

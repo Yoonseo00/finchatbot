@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Credit Card Recommender</title>
+    <link rel="stylesheet" href="../static/css/styles2.css">
+    <style>
+
+        .chat-container {
+            max-width: 100%;
+            margin: 20px auto;
+            height: 80vh;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            background-color: #2991ff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .chat-body {
+            height: 80vh;
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message {
+            background-color: #ddd;
+            padding: 8px;
+            border-radius: 5px;
+            float: left;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .options button {
+            margin: 0 10px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chat-icon-container {
+            position: fixed;
+            bottom: 120px; /* 원하는 위치로 조절 */
+            right: 35px; /* 원하는 위치로 조절 */
+            z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
+        }
+        
+        .chat-icon {
+            width: 110px; /* 아이콘의 크기 조절 */
+            height: 110px; /* 아이콘의 크기 조절 */
+            border-radius: 50%; /* 동그란 모양으로 만들기 */
+            background-color: #d6edfb; /* 배경 색상 설정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-bar">
+        <div>
+            <h1>챗봇과 대화해보세요!</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="chat-container">
+            <div class="chat-header">finchatbot</div>
+            <div class="chat-body" id="chatBody">
+                <div class="chat-message">카드를 선택하셨습니다.</div>
+                <div class="chat-message">어떤 카드를 찾고 계신가요?</div>
+                <div class="options">
+                    <button onclick="window.location.href='/creditcard'">신용카드</button>
+                    <button onclick="window.location.href='/checkcard'">체크카드</button>
+                    <button onclick="goBack()">이전 화면으로 돌아가기</button>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function selectCard(cardType) {
+                alert("선택하신 카드는 " + cardType + " 입니다.");
+                // 여기에 카드 선택 후의 동작을 추가할 수 있습니다.
+            }
+        
+            function goBack() {
+                window.history.back();
+            }
+        </script>
+    </main>
+
+    <div class="chat-icon-container">
+        <a href="/chat" class="chat-icon">
+            <img src="../static/img/chatbot.png" alt="챗봇" style="width: 110px; height: 110px; border-radius: 50%;">
+        </a>
+    </div>
+
+    <footer class="bottom-bar">
+        <nav class="button">
+            <img src="../static/img/menu.png" alt="메뉴">
+        </nav>
+        <nav class="button">
+            <a href="/graph">
+            <img src="../static/img/home.png" alt="홈">
+            </a>
+        </nav>
+        <nav class="button">
+            <a href="/index">
+                <img src="../static/img/graph.png" alt="그래프">
+            </a>
+        </nav>
+    </footer>
+
+</body>
+</html>
