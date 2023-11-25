@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block header_content %}챗봇과 대화해보세요!{% endblock %}
+
+{% block content %}
+
+<div class="chat-container">
+    <div class="chat-header">finchatbot</div>
+    <div class="chat-body" id="chatBody">
+        <div class="message bot-message">한 달 동안 어떻게 소비를 했는지 궁금하셨군요!</div>
+        <div class="message bot-message">조회하실 기간을 선택해주세요.</div>
+        <form action="/report" method="GET">
+            <label for="year">년:</label>
+            <select id="year" name="year">
+                {% for year in range(2023, 1910, -1) %}
+                <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="month">월:</label>
+            <select id="month" name="month">
+                <!-- 1월부터 12월까지 옵션을 생성하는 코드를 추가할 수 있습니다. -->
+                {% for month in range(1, 13) %}
+                <option value="{{ month }}">{{ month }}월</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">조회</button>
+        </form>
+
+        {% if selected_year and selected_month %}
+        <div class="message bot-message">{{ selected_year }}년 {{selected_month }} 월의 소비 리포트는 다음과 같습니다. </div>
+            {% if selected_month_data == 0 %}
+                 <div class="message bot-message">
+                    <p>기간: {{ selected_year }}년 {{ selected_month }}월</p>
+
+                    <p>선택한 기간에 대한 소비 데이터가 없습니다.</p>
+                </div>
+            {% else %}
+                <div class="message bot-message">
+                    <p>기간: {{ selected_year }}년 {{ selected_month }}월</p>
+
+                    <p>해당 기간 동안 총 {{ selected_month_data }} 원을 사용하셨습니다.
+                        {{ selected_month_top3 }} 입니다.
+                    </p>
+
+                    <p>목표 예산 대비 추가 사용 금액은 {{ current_month_overspending_amount }}원입니다. </p>
+                </div>
+            {% endif %}
+
+            <div class="message bot-message" onclick="selectOption('quit')" style="cursor: pointer;">
+                <p> 1. 소비 리포트 종료 </p>
+            </div>
+            <div class="message bot-message" onclick="selectOption('advice')" style="cursor: pointer;">
+                <p> 2. 이번 달 소비 분석 및 소비 조언으로 이동</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    // Add this script to scroll to the bottom
+    var chatBody = document.getElementById('chatBody');
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    function scrollToBottom() {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function selectOption(option) {
+            window.location.href = option === "quit" ? "/graph" : "/advice";
+        }
+</script>
+
+
+{% endblock %}

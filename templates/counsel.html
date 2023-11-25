@@ -1,0 +1,92 @@
+User
+{% extends "layout.html" %}
+
+{% block header_content %}챗봇과 대화해보세요!{% endblock %}
+
+{% block content %}
+
+
+<div class="chat-container">
+    <div class="chat-header">finchatbot</div>
+    <div class="chat-body" id="chatBody">
+
+        <div class="message bot-message"> {{ initial_message| safe }} </div>
+
+        {% if system_message %}
+        <div class="message bot-message" id="responseMessageContent">
+            {{ system_message }}
+        </div>
+
+        <div class="message bot-message" id="loadingMessage" style="display: none;">
+            로딩 중...
+        </div>
+        {% endif %}
+
+        <div class="message user-message" id="userMessageContent" style="display: none;">
+            사용자: <!-- 수정: 사용자 메시지를 출력 -->
+        </div>
+
+        <div class="input-container" id="inputContainer">
+            <form method="POST" action="/counsel" onsubmit="return sendUserInput()">
+                <input type="text" id="user_input" name="user_input" placeholder="원하시는 내용을 입력해주세요">
+                <button type="submit">입력 완료</button>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+<script>
+
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    // 입력 완료 시 사용자의 입력을 서버로 전송
+    function sendUserInput() {
+        const userInput = document.getElementById('user_input').value;
+
+        // 로딩 메시지 표시
+        showLoadingMessage();
+
+        socket.emit('user_input', { message: userInput });
+
+        // 사용자 메시지를 출력
+        document.getElementById('userMessageContent').innerText = '사용자: ' + userInput;
+        document.getElementById('userMessageContent').style.display = 'block';
+        document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+
+        // 입력 폼 비우기
+        document.getElementById('textInput').value = '';
+
+    }
+
+    // 서버에서 소켓 이벤트를 수신하여 결과를 표시
+    socket.on('user_input_response', function (data) {
+        // 로딩 메시지 숨기기
+        hideLoadingMessage();
+
+        if (data.bot_message) {
+            document.getElementById('responseMessageContent').innerText += '\n\n' + data.bot_message;
+        }
+    });
+
+    // 로딩 메시지 표시
+    function showLoadingMessage() {
+        var loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) {
+            loadingMessage.style.display = 'block';
+        }
+    }
+
+    // 로딩 메시지 숨기기
+    function hideLoadingMessage() {
+        var loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) {
+            loadingMessage.style.display = 'none';
+        }
+    }
+
+</script>
+
+{% endblock %} 
