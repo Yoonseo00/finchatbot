@@ -94,9 +94,35 @@ def Alarm():
     return render_template("Alarm.html")
 
 #소비내역 추가 페이지
-@app.route('/addspend')
-def AddSpend():
-    return render_template("AddSpend.html")
+@app.route('/addspend', methods=['GET', 'POST'])
+def addspend():
+    if request.method == 'POST':
+        if 'username' in session:
+            userid = session['username']
+            
+            date = request.form['date']
+            category = request.form['category']
+            price = request.form['price']
+            place = request.form['place']
+
+            conn = connectsql()
+            cursor = conn.cursor() 
+            query = "INSERT INTO addspend (username, add_date, add_category, add_price, add_place) values (%s, %s, %s, %s, %s)"
+            value = (userid, date, category, price, place)
+            cursor.execute(query, value)
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            return redirect(url_for('addspend'))
+        else:
+            return render_template('errorpage.html')
+    else:
+        if 'username' in session:
+            username = session['username']
+            return render_template ('AddSpend.html', logininfo = username)
+        else:
+            return render_template ('Error.html')
 
 #상세 소비내역 페이지
 @app.route('/spendlist')
