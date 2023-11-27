@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, url_for, request, redirect
+from flask import Flask, render_template, request, session, url_for, request, redirect, jsonify
 import pymysql
 from flask_socketio import SocketIO
 import pandas as pd
@@ -8,6 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 app.secret_key = 'sample_secret'
+
 
 def connectsql():
     conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
@@ -215,24 +216,22 @@ def generate_and_emit_advice_response(user_message, current_month_data, current_
                                               current_exceed_category)
     socketio.emit('advice_response', {'system_message': system_message})
 
-@app.route('/counsel', methods=['GET', 'POST'])
+@app.route('/counsel')
 def counsel():
-
-    if request.method == 'POST':
-        user_message = request.form['user_input']
-        print(f"Received user input: {user_message}")
-        system_message = counsell.generate_counsel_response(user_message)
-        print(f"Generated bot response: {system_message}")
-
-         # 사용자에게 응답 메시지를 소켓을 통해 전송
-
-        socketio.emit('user_input_response', {'bot_message': system_message}, namespace='/counsel')
-        return render_template('counsel.html', user_message=user_message, system_message=system_message)
-
-    # GET 요청에 대한 기본 응답 (페이지를 처음 열 때)
-    initial_message = "안녕하세요. 저는 finchatbot이라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다.<br>또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요.<br>최선을 다해 도움을 드리도록 하겠습니다!"
-
+    initial_message = "안녕하세요. 저는 finchatbot이라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다. 또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요. 최선을 다해 도움을 드리도록 하겠습니다!"
     return render_template('counsel.html', initial_message=initial_message)
+
+
+@app.route('/get_response', methods=['POST'])
+def get_response():
+
+    user_message = request.form['user_message']
+    print(f"Received user message: {user_message}")
+    bot_response= counsell.generate_counsel_response(user_message)
+    print(f"Generated bot response: {bot_response}")
+    return jsonify({'user_message': user_message, 'bot_response': bot_response})
+
+
 
 @app.route('/cardopt')
 def index():
