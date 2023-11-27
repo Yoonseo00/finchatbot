@@ -10,10 +10,6 @@ app = Flask(__name__)
 app.secret_key = 'sample_secret'
 
 
-def connectsql():
-    conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
-    return conn
-
 socketio=SocketIO(app)
 
 import graph1
@@ -21,6 +17,7 @@ import graph3
 import consume_report
 import advicee
 import counsell
+import mysql
 
 #임시(페이지 이동을 위한 페이지)
 @app.route('/main')
@@ -41,7 +38,7 @@ def login():
         userpw = request.form['pw']
 
         logininfo = request.form['id']
-        conn = connectsql()
+        conn = mysql.connectsql()
         cursor = conn.cursor()
         query = "SELECT * FROM users WHERE username = %s AND password = %s"
         value = (userid, userpw)
@@ -69,7 +66,7 @@ def regist():
         userid = request.form['id']
         userpw = request.form['pw']
 
-        conn = connectsql()
+        conn = mysql.connectsql()
         cursor = conn.cursor()
         query = "SELECT * FROM users WHERE username = %s"
         value = userid
@@ -137,7 +134,7 @@ def circle_graph():
 
 @app.route('/index', methods=['GET', 'POST'])
 def graph():
-    df = graph1.load_data('C:/finchatbot/exdata.csv')
+    df = graph1.load_data()
     category_avg=graph1.category_avg_for_last_3_months(df)
     graph = graph1.generate_graph(df)
     current_month_total_expense=graph1.calculate_current_month_total_expense(df)
@@ -170,7 +167,7 @@ def report():
     selected_year = int(selected_year) if selected_year else 0
     selected_month = int(selected_month) if selected_month else 0
 
-    df = graph1.load_data('C:/finchatbot/exdata.csv')
+    df = graph1.load_data()
 
     selected_month_data = consume_report.monthly_spending(df, selected_year, selected_month)
     
@@ -199,7 +196,7 @@ def report():
 @app.route('/advice', methods=['GET'])
 def advice():
 
-    df = graph1.load_data('C:/finchatbot/exdata.csv')
+    df = graph1.load_data()
 
     current_month_data=graph1.calculate_current_month_total_expense(df)
     current_category_data=graph1.category_consume_for_current_month(df)
