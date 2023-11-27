@@ -69,13 +69,13 @@
         if (data.bot_message) {
             // 새로운 메시지 요소 생성
             const newMessage = document.createElement('div');
-            newMessage.className = 'message bot-message';
-            newMessage.innerText = data.bot_message;
+            newMessage.className = 'message bot-message'; // 클래스 추가 (필요에 따라 bot 또는 user에 따라 클래스 변경 가능)
+            newMessage.innerText = data.bot_message; // 메시지 추가
 
             // 기존 채팅방에 새로운 메시지 추가
             const chatBody = document.getElementById('chatBody');
-            chatBody.appendChild(newMessage);
-            chatBody.scrollTop = chatBody.scrollHeight;
+            chatBody.appendChild(newMessage); // 기존 채팅창에 새로운 요소 추가
+            chatBody.scrollTop = chatBody.scrollHeight; // 스크롤 조정
 
             // 이전 대화 내용 상자 표시
             document.getElementById('chatHistoryContent').style.display = 'block';

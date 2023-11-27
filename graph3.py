@@ -3,22 +3,49 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+import pymysql
+
 
 
 app = Flask(__name__)
 
+def connect_to_db():
+    # MySQL 데이터베이스 연결 설정
+    conn = pymysql.connect(
+        host='127.0.0.1',
+        port=3306,
+        user='root',
+        password='1234',
+        database='finchatbot',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    return conn
+
 def budget_data():
-    # CSV 파일에서 데이터 읽기
-    csv_data = pd.read_csv('budget_data.csv')  # CSV 파일명은 실제 파일명으로 수정해야 합니다
+    conn = connect_to_db()
+    cursor = conn.cursor()
 
-    # CSV 파일에서 필요한 데이터 추출 (예를 들어, 'budget' 및 'total_spent' 열)
-    Budget = csv_data['Budget'].sum()  # 예산
-    Spent = csv_data['Spent'].sum()  # 총 소비 금액
+    try:
+        # 예산과 총 소비금액 가져오기
+        cursor.execute('SELECT SUM(Budget) as Budget, SUM(Spent) as Spent FROM budget_data')
+        result = cursor.fetchone()  # 결과 가져오기
 
-    # 예산 사용률 계산
-    budget_percentage = (Spent / Budget) * 100 if Budget > 0 else 0
+        Budget = result['Budget'] if result['Budget'] else 0
+        Spent = result['Spent'] if result['Spent'] else 0
 
-    return Budget, Spent, budget_percentage
+        # 예산 사용률 계산
+        budget_percentage = (Spent / Budget) * 100 if Budget > 0 else 0
+
+        return Budget, Spent, budget_percentage
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None, None, None
+
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 def display_budget():
