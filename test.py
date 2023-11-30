@@ -3,10 +3,6 @@ from transformers import BertTokenizer, BertModel
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 21b134ddd316b5e53174f5499b1d24184913dc98
 # KoBERT 토크나이저와 모델 불러오기
 tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
 model = BertModel.from_pretrained("monologg/kobert")
@@ -59,7 +55,3 @@ print("추천 카드 상품:", best_match)
 
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 21b134ddd316b5e53174f5499b1d24184913dc98

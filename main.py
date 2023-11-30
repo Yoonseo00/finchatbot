@@ -5,6 +5,7 @@ import pandas as pd
 from transformers import BertTokenizer, BertModel
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
+from flask import jsonify
 
 app = Flask(__name__)
 app.secret_key = 'sample_secret'
@@ -272,9 +273,13 @@ def show_credit_card():
 def show_check_card():
     return render_template('checkcard.html')
 
-@app.route('/selec')
-def show_selec_spend():
-    return render_template('selecspend.html')
+@app.route('/selec1')
+def show_selec_spend1():
+    return render_template('selecspend_cre.html')
+
+@app.route('/selec2')
+def show_selec_spend2():
+    return render_template('selecspend_chk.html')
 
 # KoBERT 관련 설정
 tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
@@ -301,20 +306,26 @@ def calculate_similarity(embedding1, embedding2):
     # 유사도를 계산하는 함수
     return cosine_similarity(embedding1, embedding2)[0][0]
 
-@app.route('/recom')
-def recom():
-    return render_template('recomcard.html')
+@app.route('/recom1')
+def recom1():
+    return render_template('recomcard_cre.html')
 
-@app.route('/get_recommendation', methods=['POST'])
-def get_recommendation():
+@app.route('/recom2')
+def recom2():
+    return render_template('recomcard_chk.html')
+
+@app.route('/get_recommendation1', methods=['POST'])
+def get_recommendation1():
     if request.method == 'POST':
         user_preference = request.form['user_preference']
+        
+        df = pd.read_csv('creditcard.csv')
 
         # 사용자 응답을 임베딩
         user_embedding = embed_user_response([user_preference])
 
         # embedded_card_data.csv 파일을 불러와 카드 혜택의 임베딩값을 저장
-        card_data = pd.read_csv('C:/finchatbot/embedded_card_data.csv')
+        card_data = pd.read_csv('C:/finchatbot/creditcard.csv')
 
         # 유사도 계산 및 추천
         best_match = None
@@ -327,8 +338,41 @@ def get_recommendation():
             if similarity > highest_similarity:
                 highest_similarity = similarity
                 best_match = row['카드명']
+                
+        matched_content = df[df['카드명'] == best_match]['내용'].values
 
-        return render_template('recomcard.html', recommendation=best_match, user_input=user_preference)
+        return render_template('recomcard_cre.html', recommendation=best_match, user_input=user_preference, matched_content=matched_content)
+    
+@app.route('/get_recommendation2', methods=['POST'])
+def get_recommendation2():
+    if request.method == 'POST':
+        user_preference = request.form['user_preference']
+        
+        df = pd.read_csv('checkcard.csv')
+
+        # 사용자 응답을 임베딩
+        user_embedding = embed_user_response([user_preference])
+
+        # embedded_card_data.csv 파일을 불러와 카드 혜택의 임베딩값을 저장
+        card_data = pd.read_csv('C:/finchatbot/checkcard.csv')
+
+        # 유사도 계산 및 추천
+        best_match = None
+        highest_similarity = 0.0
+
+        for index, row in card_data.iterrows():
+            card_embedding = embed_card_benefits([row['embedding']])
+            similarity = calculate_similarity(card_embedding, user_embedding)
+
+            if similarity > highest_similarity:
+                highest_similarity = similarity
+                best_match = row['카드명']
+                
+        matched_content = df[df['카드명'] == best_match]['내용'].values
+
+        return render_template('recomcard_chk.html', recommendation=best_match, user_input=user_preference, matched_content=matched_content)
+
+        
 
 
 if __name__ == '__main__':
