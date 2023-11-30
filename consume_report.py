@@ -8,20 +8,20 @@ app = Flask(__name__, template_folder='C:/finchatbot/templates')
 
 import graph1
 
-df = graph1.load_data('C:/finchatbot/exdata.csv')
+df = graph1.load_data()
 
 def monthly_spending(dataframe, year, month):
 
-    selected_data = dataframe[(dataframe['날짜'].dt.year == year) & (dataframe['날짜'].dt.month == month)]
-    total_spending = selected_data['금액'].sum()
+    selected_data = dataframe[(dataframe['add_date'].dt.year == year) & (dataframe['add_date'].dt.month == month)]
+    total_spending = selected_data['add_price'].sum()
 
     return total_spending
 
 def top3_categories_for_month(dataframe, year, month):
-    selected_data = dataframe[(dataframe['날짜'].dt.year == year) & (dataframe['날짜'].dt.month == month)]
+    selected_data = dataframe[(dataframe['add_date'].dt.year == year) & (dataframe['add_date'].dt.month == month)]
 
     # 카테고리별 소비액 합계를 계산
-    category_spending = selected_data.groupby('카테고리')['금액'].sum()
+    category_spending = selected_data.groupby('add_category')['add_price'].sum()
 
     # 소비액이 많은 순서대로 정렬하고 top3를 반환
     top3_categories = category_spending.sort_values(ascending=False).head(3)
