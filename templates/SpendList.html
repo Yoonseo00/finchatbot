@@ -1,8 +1,43 @@
-{% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
-{% block header_content %}상세 소비내역{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
 
-{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+		
+		<title>상세 소비내역</title>
+	</head>
+	<body>
 
-    <input type="month" required>
+	<div class="container">
+	<br><h1><strong><a style="color:#110957;">상세 소비내역</a></strong></h1>
+	<table class="table table-hover">
+		<thead>
+		<tr>
+			<th>사용자</th>
+			<th>날짜</th>
+			<th>카테고리</th>
+			<th>가격</th>
+			<th>사용처</th>
+		</tr>
+		</thead>
 
-{% endblock %}
+		<tbody>
+		{% for data in datalist %}
+		<tr>
+			<td>{{data['username']}}</td>
+			<td>{{data['add_date']}}</a></td>
+			<td>{{data['add_category']}}</td>
+			<td>{{data['add_price']}}</td>
+			<td>{{data['add_place']}}</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	</div>
+	</body>
+</html>
