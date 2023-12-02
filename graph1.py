@@ -12,10 +12,10 @@ app = Flask(__name__, template_folder='C:/finchatbot/templates')
 
 # 데이터를 불러와 DataFrame으로 반환하는 함수
 def load_data():
-    conn=pymysql.connect(host='127.0.0.1', user='chaerin', password='1234', db='finchatbotdb', charset='utf8')
+    conn=pymysql.connect(host='127.0.0.1', user='root', password='1234', db='test', charset='utf8')
     cur=conn.cursor()
 
-    query='select * from spendlist'
+    query='select * from addspend'
 
     df = pd.read_sql(query, conn)
     # 연결 종료

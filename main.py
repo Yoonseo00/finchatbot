@@ -7,17 +7,20 @@ import torch
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import jsonify
 
-app = Flask(__name__)
-app.secret_key = 'sample_secret'
-
-socketio=SocketIO(app)
-
 import graph1
 import graph3
 import consume_report
 import advicee
 import counsell
-import alarm
+
+def connectsql():
+    conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
+    return conn
+
+app = Flask(__name__)
+app.secret_key = 'sample_secret'
+
+socketio=SocketIO(app)
 
 #임시(페이지 이동을 위한 페이지)
 @app.route('/main')
@@ -81,23 +84,8 @@ def regist():
             data = cursor.fetchall()
             conn.commit()
             return render_template('registSuccess.html')
-        cursor.close()
-        conn.close()
     else:
         return render_template('regist.html')
-
-#과소비알림페이지
-@app.route('/alarm')
-def Alarm():
-
-    badge_notification=alarm.badge()
-
-    if badge_notification:
-        message = "<p>해당 월의 목표 예산을 초과했습니다.</p><p>챗봇에게 조언을 구해보세요!</p>"
-    else:
-        message = "예산에 맞게 아껴쓰고 있어요.\n궁금한 점이 있다면 챗봇에게 조언을 구해보세요!"
-
-    return render_template("Alarm.html", badge_notification=badge_notification, message=message)
 
 #소비내역 추가 페이지
 @app.route('/addspend', methods=['GET', 'POST'])
@@ -169,8 +157,6 @@ def circle_graph():
 @app.route('/index', methods=['GET', 'POST'])
 def graph():
 
-    badge_notification=alarm.badge()
-
     df = graph1.load_data()
     category_avg=graph1.category_avg_for_last_3_months(df)
     graph = graph1.generate_graph(df)
@@ -189,7 +175,7 @@ def graph():
         comparison_graph = graph1.generate_comparison_graph(age_category_data, category_consume_current_month)
         exceeded_categories_avg=graph1.find_exceeded_age_group(df,age_group)
 
-    return render_template('index.html',badge_notification=badge_notification, graph=graph, current_month_total_expense=current_month_total_expense, previous_3_months_total_expense=previous_3_months_total_expense, exceeded_categories=exceeded_categories, age_group=age_group, comparison_graph=comparison_graph,exceeded_categories_avg=exceeded_categories_avg, results=[])
+    return render_template('index.html', graph=graph, current_month_total_expense=current_month_total_expense, previous_3_months_total_expense=previous_3_months_total_expense, exceeded_categories=exceeded_categories, age_group=age_group, comparison_graph=comparison_graph,exceeded_categories_avg=exceeded_categories_avg, results=[])
 
 @app.route('/chat')
 def chat():
