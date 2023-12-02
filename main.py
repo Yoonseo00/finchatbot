@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, url_for, request, redirect
+from flask import Flask, render_template, request, session, url_for, request, redirect, jsonify
 import pymysql
 from flask_socketio import SocketIO
 import pandas as pd
@@ -10,10 +10,6 @@ from flask import jsonify
 app = Flask(__name__)
 app.secret_key = 'sample_secret'
 
-def connectsql():
-    conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
-    return conn
-
 socketio=SocketIO(app)
 
 import graph1
@@ -21,6 +17,7 @@ import graph3
 import consume_report
 import advicee
 import counsell
+import alarm
 
 #임시(페이지 이동을 위한 페이지)
 @app.route('/main')
@@ -92,7 +89,15 @@ def regist():
 #과소비알림페이지
 @app.route('/alarm')
 def Alarm():
-    return render_template("Alarm.html")
+
+    badge_notification=alarm.badge()
+
+    if badge_notification:
+        message = "<p>해당 월의 목표 예산을 초과했습니다.</p><p>챗봇에게 조언을 구해보세요!</p>"
+    else:
+        message = "예산에 맞게 아껴쓰고 있어요.\n궁금한 점이 있다면 챗봇에게 조언을 구해보세요!"
+
+    return render_template("Alarm.html", badge_notification=badge_notification, message=message)
 
 #소비내역 추가 페이지
 @app.route('/addspend', methods=['GET', 'POST'])
@@ -163,7 +168,10 @@ def circle_graph():
 
 @app.route('/index', methods=['GET', 'POST'])
 def graph():
-    df = graph1.load_data('C:/finchatbot/exdata.csv')
+
+    badge_notification=alarm.badge()
+
+    df = graph1.load_data()
     category_avg=graph1.category_avg_for_last_3_months(df)
     graph = graph1.generate_graph(df)
     current_month_total_expense=graph1.calculate_current_month_total_expense(df)
@@ -181,7 +189,7 @@ def graph():
         comparison_graph = graph1.generate_comparison_graph(age_category_data, category_consume_current_month)
         exceeded_categories_avg=graph1.find_exceeded_age_group(df,age_group)
 
-    return render_template('index.html', graph=graph, current_month_total_expense=current_month_total_expense, previous_3_months_total_expense=previous_3_months_total_expense, exceeded_categories=exceeded_categories, age_group=age_group, comparison_graph=comparison_graph,exceeded_categories_avg=exceeded_categories_avg, results=[])
+    return render_template('index.html',badge_notification=badge_notification, graph=graph, current_month_total_expense=current_month_total_expense, previous_3_months_total_expense=previous_3_months_total_expense, exceeded_categories=exceeded_categories, age_group=age_group, comparison_graph=comparison_graph,exceeded_categories_avg=exceeded_categories_avg, results=[])
 
 @app.route('/chat')
 def chat():
@@ -242,24 +250,22 @@ def generate_and_emit_advice_response(user_message, current_month_data, current_
                                               current_exceed_category)
     socketio.emit('advice_response', {'system_message': system_message})
 
-@app.route('/counsel', methods=['GET', 'POST'])
+@app.route('/counsel')
 def counsel():
-
-    if request.method == 'POST':
-        user_message = request.form['user_input']
-        print(f"Received user input: {user_message}")
-        system_message = counsell.generate_counsel_response(user_message)
-        print(f"Generated bot response: {system_message}")
-
-         # 사용자에게 응답 메시지를 소켓을 통해 전송
-
-        socketio.emit('user_input_response', {'bot_message': system_message}, namespace='/counsel')
-        return render_template('counsel.html', user_message=user_message, system_message=system_message)
-
-    # GET 요청에 대한 기본 응답 (페이지를 처음 열 때)
-    initial_message = "안녕하세요. 저는 finchatbot이라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다.<br>또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요.<br>최선을 다해 도움을 드리도록 하겠습니다!"
-
+    initial_message = "안녕하세요. 저는 finchatbot이라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다. 또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요. 최선을 다해 도움을 드리도록 하겠습니다!"
     return render_template('counsel.html', initial_message=initial_message)
+
+
+@app.route('/get_response', methods=['POST'])
+def get_response():
+
+    user_message = request.form['user_message']
+    print(f"Received user message: {user_message}")
+    bot_response= counsell.generate_counsel_response(user_message)
+    print(f"Generated bot response: {bot_response}")
+    return jsonify({'user_message': user_message, 'bot_response': bot_response})
+
+
 
 @app.route('/cardopt')
 def index():

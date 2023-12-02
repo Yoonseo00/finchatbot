@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import pymysql
 from datetime import datetime, timedelta
 
 from io import BytesIO
@@ -10,11 +11,17 @@ import base64
 app = Flask(__name__, template_folder='C:/finchatbot/templates')
 
 # 데이터를 불러와 DataFrame으로 반환하는 함수
-def load_data(file_path):
-    # CSV 파일에서 데이터를 불러옵니다.
-    df = pd.read_csv(file_path)
-    # 날짜를 datetime 형식으로 변환합니다.
-    df['날짜'] = pd.to_datetime(df['날짜'])
+def load_data():
+    conn=pymysql.connect(host='127.0.0.1', user='chaerin', password='1234', db='finchatbotdb', charset='utf8')
+    cur=conn.cursor()
+
+    query='select * from spendlist'
+
+    df = pd.read_sql(query, conn)
+    # 연결 종료
+    conn.close()
+
+    df['add_date'] = pd.to_datetime(df['add_date'])
 
 
     return df
@@ -38,8 +45,8 @@ def filter_data_for_current_month(df):
 
     # 현재 달의 데이터 필터링
     current_month_data = df[
-        (df['날짜'] >= current_month_first_day) &
-        (df['날짜'] <= current_month_last_day)
+        (df['add_date'] >= current_month_first_day) &
+        (df['add_date'] <= current_month_last_day)
     ]
 
     return current_month_data
@@ -50,7 +57,7 @@ def calculate_current_month_total_expense(df):
     current_month_data=filter_data_for_current_month(df)
    
     # 현재 달의 총 소비 금액 계산
-    current_month_total_expense = current_month_data['금액'].sum()
+    current_month_total_expense = current_month_data['add_price'].sum()
 
     return current_month_total_expense
 
@@ -59,7 +66,7 @@ def category_consume_for_current_month(df):
 
     current_month_data=filter_data_for_current_month(df)
 
-    category_consume_current_month = current_month_data.groupby('카테고리')['금액'].sum().to_dict()
+    category_consume_current_month = current_month_data.groupby('add_category')['add_price'].sum().to_dict()
     
     return category_consume_current_month
 
@@ -90,7 +97,7 @@ def filter_data_for_last_3_months(df):
     start_date = datetime(start_year, start_month, 1)
 
     # 최근 3개월치 데이터 필터링
-    filtered_data = df[(df['날짜'] >= start_date) & (df['날짜'] <= end_date)]
+    filtered_data = df[(df['add_date'] >= start_date) & (df['add_date'] <= end_date)]
 
     return filtered_data
 
@@ -99,7 +106,7 @@ def filter_data_for_last_3_months(df):
 def category_avg_for_last_3_months(df):
 
     filtered_data=filter_data_for_last_3_months(df)
-    category_sum = filtered_data.groupby('카테고리')['금액'].sum()  # 각 카테고리별 금액의 합을 계산
+    category_sum = filtered_data.groupby('add_category')['add_price'].sum()  # 각 카테고리별 금액의 합을 계산
     category_avg = category_sum / 3  # 3으로 나누어 평균을 계산
     category_avg = category_avg.to_dict()  # 결과를 딕셔너리로 변환
 
@@ -142,7 +149,7 @@ def calculate_monthly_total_expense(df):
     filtered_data = filter_data_for_last_3_months(df)
 
     # 직전 3개월의 총 소비 금액 계산
-    previous_3_months_total_expense = filtered_data.groupby(filtered_data['날짜'].dt.strftime('%Y-%m'))['금액'].sum().to_dict()
+    previous_3_months_total_expense = filtered_data.groupby(filtered_data['add_date'].dt.strftime('%Y-%m'))['add_price'].sum().to_dict()
 
     return previous_3_months_total_expense
 

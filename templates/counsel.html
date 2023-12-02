@@ -1,103 +1,106 @@
 {% extends "layout.html" %}
+
 {% block header_content %}챗봇과 대화해보세요!{% endblock %}
+
 {% block content %}
+    <style>
+        #chat-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: auto;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 80vh; /* 화면 세로 길이 전부 차지 */
+        }
 
-<div class="chat-container">
-    <div class="chat-header">finchatbot</div>
-    <div class="chat-body" id="chatBody">
+        #chat {
+            height: 700px;
+            overflow-y: scroll;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
 
-        <div class="message bot-message"> {{ initial_message| safe }} </div>
+        #user-input {
+            width: 70%;
+            padding: 8px;
+            margin-right: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
 
-        <div class="message user-message" id="userMessageContent" style="display: none;">
-            사용자: <!-- 수정: 사용자 메시지를 출력 -->
-        </div>
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
 
-        {% if system_message %}
-        <div class="message bot-message" id="responseMessageContent"> 
-            {{ system_message }}
-        </div>
-        {% endif %}
+        p {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            max-width: 70%;
+            word-wrap: break-word;
+            margin-bottom: 15px;
+            white-space: pre-line; /* 줄바꿈 유지 설정 */
+        }
 
-        <div class="message bot-message" id="loadingMessage" style="display: none;">
-            로딩 중...
-        </div>
+        p.user-message {
+            background-color: #4CAF50;
+            color: white;
+            align-self: flex-end;
+        }
 
-        <div class="input-container" id="inputContainer">
-            <form method="POST" action="/counsel" onsubmit="return sendUserInput()">
-                <input type="text" id="user_input" name="user_input" placeholder="원하시는 내용을 입력해주세요">
-                <button type="submit">입력 완료</button>
-            </form>
-        </div>
+        p.bot-message {
+            background-color: #2196F3;
+            color: white;
+        }
+    </style>
 
-        <div class="message bot-message" id="chatHistoryContent" style="display: none;">
-            <!-- 이전 대화 내용을 출력할 상자 -->
-        </div>
 
+<div id="chat-container">
+    <div id="chat">
+        <p class="bot-message"><strong>Bot:</strong> {{ initial_message }}</p>
     </div>
+    <input type="text" id="user-input" placeholder="원하시는 내용을 입력해주세요">
+    <button onclick="sendMessage()">입력 완료</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 <script>
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    function sendMessage() {
+        var userMessage = document.getElementById('user-input').value;
+        document.getElementById('chat').innerHTML += '<p class="user-message"><strong>User:</strong> ' + userMessage + '</p>';
+        document.getElementById('user-input').value = '';
 
-    // 입력 완료 시 사용자의 입력을 서버로 전송
-    function sendUserInput() {
-        const userInput = document.getElementById('user_input').value;
+        // 표시할 로딩 메시지
+        var loadingMessage = '<p class="bot-message"><strong>Bot:</strong> 당신에게 맞는 최적의 조언을 불러오는 중...</p>';
+        document.getElementById('chat').innerHTML += loadingMessage;
 
-        // 로딩 메시지 표시
-        showLoadingMessage();
 
-        socket.emit('user_input', { message: userInput });
+        // Send the user message to the backend
+        fetch('/get_response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'user_message=' + encodeURIComponent(userMessage),
+        })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = data.bot_response;
 
-        // 사용자 메시지를 출력
-        document.getElementById('userMessageContent').innerText = '사용자: ' + userInput;
-        document.getElementById('userMessageContent').style.display = 'block';
-        document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
-
-        // 입력 폼 비우기
-        document.getElementById('textinput').value = '';
-
-        return false;
+                // 로딩 메시지 갱신
+                document.getElementById('chat').innerHTML = document.getElementById('chat').innerHTML.replace(loadingMessage, '');
+                
+                document.getElementById('chat').innerHTML += '<p class="bot-message"><strong>Bot:</strong> ' + botResponse + '</p>';
+            });
     }
-
-    // 서버에서 소켓 이벤트를 수신하여 결과를 표시
-    socket.on('user_input_response', function (data) {
-        // 로딩 메시지 숨기기
-        hideLoadingMessage();
-
-        if (data.bot_message) {
-            // 새로운 메시지 요소 생성
-            const newMessage = document.createElement('div');
-            newMessage.className = 'message bot-message'; // 클래스 추가 (필요에 따라 bot 또는 user에 따라 클래스 변경 가능)
-            newMessage.innerText = data.bot_message; // 메시지 추가
-
-            // 기존 채팅방에 새로운 메시지 추가
-            const chatBody = document.getElementById('chatBody');
-            chatBody.appendChild(newMessage); // 기존 채팅창에 새로운 요소 추가
-            chatBody.scrollTop = chatBody.scrollHeight; // 스크롤 조정
-
-            // 이전 대화 내용 상자 표시
-            document.getElementById('chatHistoryContent').style.display = 'block';
-        }
-    });
-
-    // 로딩 메시지 표시
-    function showLoadingMessage() {
-        var loadingMessage = document.getElementById('loadingMessage');
-        if (loadingMessage) {
-            loadingMessage.style.display = 'block';
-        }
-    }
-
-    // 로딩 메시지 숨기기
-    function hideLoadingMessage() {
-        var loadingMessage = document.getElementById('loadingMessage');
-        if (loadingMessage) {
-            loadingMessage.style.display = 'none';
-        }
-    }
-
 </script>
 
 {% endblock %}
