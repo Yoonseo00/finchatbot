@@ -273,18 +273,10 @@ def index():
 
 @app.route('/creditcard')
 def show_credit_card():
-    return render_template('creditcard.html')
+    return render_template('selecspend_cre.html')
 
 @app.route('/checkcard')
 def show_check_card():
-    return render_template('checkcard.html')
-
-@app.route('/selec1')
-def show_selec_spend1():
-    return render_template('selecspend_cre.html')
-
-@app.route('/selec2')
-def show_selec_spend2():
     return render_template('selecspend_chk.html')
 
 # KoBERT 관련 설정
@@ -312,69 +304,161 @@ def calculate_similarity(embedding1, embedding2):
     # 유사도를 계산하는 함수
     return cosine_similarity(embedding1, embedding2)[0][0]
 
-@app.route('/recom1')
-def recom1():
-    return render_template('recomcard_cre.html')
+# 카드 저장 함수
+def save_to_mysql1(user_choice):
+    cursor = db.cursor()
+    
+    delete_sql = "DELETE FROM cre_data"
+    cursor.execute(delete_sql)
 
-@app.route('/recom2')
-def recom2():
-    return render_template('recomcard_chk.html')
+    # CSV 파일 읽기
+    df = pd.read_csv('creditcard.csv')
+
+    # 사용자가 선택한 금액 범위에 따른 '기준실적' 열 필터링
+    if user_choice == 'under_300000':
+        filtered_data = df[df['기준실적'] < 300000][['카드명', '내용', 'embedding']]
+    elif user_choice == '300000_400000':
+        filtered_data = df[(df['기준실적'] < 400000)][['카드명', '내용', 'embedding']]
+    elif user_choice == '400000_500000':
+        filtered_data = df[(df['기준실적'] < 500000)][['카드명', '내용', 'embedding']]
+    else:
+        filtered_data = df[df['기준실적'] >= 500000][['카드명', '내용', 'embedding']]
+
+
+    # MySQL에 데이터 저장
+    for index, row in filtered_data.iterrows():
+        card_name = row['카드명']
+        card_content = row['내용']
+        card_embedding = row['embedding']
+        
+        sql = "INSERT INTO cre_data (card_name, card_content, card_embedding) VALUES (%s, %s, %s)"
+        val = (card_name, card_content, card_embedding)
+        cursor.execute(sql, val)
+
+    db.commit()
+    
+def save_to_mysql2(user_choice):
+    cursor = db.cursor()
+    
+    delete_sql = "DELETE FROM chk_data"
+    cursor.execute(delete_sql)
+
+    # CSV 파일 읽기
+    df = pd.read_csv('checkcard.csv')
+
+    # 사용자가 선택한 금액 범위에 따른 '기준실적' 열 필터링
+    if user_choice == 'under_300000':
+        filtered_data = df[df['기준실적'] < 300000][['카드명', '내용', 'embedding']]
+    elif user_choice == '300000_400000':
+        filtered_data = df[(df['기준실적'] < 400000)][['카드명', '내용', 'embedding']]
+    elif user_choice == '400000_500000':
+        filtered_data = df[(df['기준실적'] < 500000)][['카드명', '내용', 'embedding']]
+    else:
+        filtered_data = df[df['기준실적'] >= 500000][['카드명', '내용', 'embedding']]
+
+
+    # MySQL에 데이터 저장
+    for index, row in filtered_data.iterrows():
+        card_name = row['카드명']
+        card_content = row['내용']
+        card_embedding = row['embedding']
+        
+        sql = "INSERT INTO chk_data (card_name, card_content, card_embedding) VALUES (%s, %s, %s)"
+        val = (card_name, card_content, card_embedding)
+        cursor.execute(sql, val)
+
+    db.commit()
+
+
+# 카드 필터링 및 저장 후 recomcard_cre.html로 이동
+@app.route('/filter_cards1', methods=['POST'])
+def filter_cards1():
+    if request.method == 'POST':
+        # 사용자가 선택한 데이터
+        user_choice = request.form['card_amount']
+
+        # 데이터 저장 함수 호출
+        save_to_mysql1(user_choice)
+        
+        # recomcard_cre.html로 이동
+        return render_template('recomcard_cre.html')
+    
+@app.route('/filter_cards2', methods=['POST'])
+def filter_cards2():
+    if request.method == 'POST':
+        # 사용자가 선택한 데이터
+        user_choice = request.form['card_amount']
+
+        # 데이터 저장 함수 호출
+        save_to_mysql2(user_choice)
+        
+        # recomcard_cre.html로 이동
+        return render_template('recomcard_chk.html')
+
 
 @app.route('/get_recommendation1', methods=['POST'])
-def get_recommendation1():
+def recommend_cards1():
     if request.method == 'POST':
         user_preference = request.form['user_preference']
         
-        df = pd.read_csv('creditcard.csv')
+        cursor = db.cursor()
 
-        # 사용자 응답을 임베딩
+        # MySQL에서 저장된 데이터 가져오기
+        sql = "SELECT * FROM cre_data"
+        cursor.execute(sql)
+        filtered_data = cursor.fetchall()
+
         user_embedding = embed_user_response([user_preference])
 
-        # embedded_card_data.csv 파일을 불러와 카드 혜택의 임베딩값을 저장
-        card_data = pd.read_csv('C:/finchatbot/creditcard.csv')
-
-        # 유사도 계산 및 추천
         best_match = None
         highest_similarity = 0.0
 
-        for index, row in card_data.iterrows():
-            card_embedding = embed_card_benefits([row['embedding']])
+        for data in filtered_data:
+            # 데이터베이스에서 가져온 문자열 데이터를 벡터로 변환
+            card_embedding_str = data[2]
+            card_embedding = embed_card_benefits([card_embedding_str])
+
+            # 유사도 계산
             similarity = calculate_similarity(card_embedding, user_embedding)
 
             if similarity > highest_similarity:
                 highest_similarity = similarity
-                best_match = row['카드명']
-                
-        matched_content = df[df['카드명'] == best_match]['내용'].values
+                best_match = data[0]
+
+        matched_content = next((data[1] for data in filtered_data if data[0] == best_match), None)
 
         return render_template('recomcard_cre.html', recommendation=best_match, user_input=user_preference, matched_content=matched_content)
     
 @app.route('/get_recommendation2', methods=['POST'])
-def get_recommendation2():
+def recommend_cards2():
     if request.method == 'POST':
         user_preference = request.form['user_preference']
         
-        df = pd.read_csv('checkcard.csv')
+        cursor = db.cursor()
 
-        # 사용자 응답을 임베딩
+        # MySQL에서 저장된 데이터 가져오기
+        sql = "SELECT * FROM chk_data"
+        cursor.execute(sql)
+        filtered_data = cursor.fetchall()
+
         user_embedding = embed_user_response([user_preference])
 
-        # embedded_card_data.csv 파일을 불러와 카드 혜택의 임베딩값을 저장
-        card_data = pd.read_csv('C:/finchatbot/checkcard.csv')
-
-        # 유사도 계산 및 추천
         best_match = None
         highest_similarity = 0.0
 
-        for index, row in card_data.iterrows():
-            card_embedding = embed_card_benefits([row['embedding']])
+        for data in filtered_data:
+            # 데이터베이스에서 가져온 문자열 데이터를 벡터로 변환
+            card_embedding_str = data[2]
+            card_embedding = embed_card_benefits([card_embedding_str])
+
+            # 유사도 계산
             similarity = calculate_similarity(card_embedding, user_embedding)
 
             if similarity > highest_similarity:
                 highest_similarity = similarity
-                best_match = row['카드명']
-                
-        matched_content = df[df['카드명'] == best_match]['내용'].values
+                best_match = data[0]
+
+        matched_content = next((data[1] for data in filtered_data if data[0] == best_match), None)
 
         return render_template('recomcard_chk.html', recommendation=best_match, user_input=user_preference, matched_content=matched_content)
 

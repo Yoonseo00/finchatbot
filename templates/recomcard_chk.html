@@ -110,9 +110,7 @@
                 <div class="chat-message" id="recommendationSection" >
                     {% if recommendation %} 
                     <h1>추천 카드 상품: {{ recommendation }}</h1>
-                    {% for content in matched_content %}
-                        <p>내용: {{ content }}</p>
-                    {% endfor %}
+                    <p>내용: {{ matched_content }}</p>
                     {% endif %} 
                 </div>
             </div>
