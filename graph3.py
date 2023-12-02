@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 import pymysql
+import graph1
 
 
 
@@ -16,7 +17,7 @@ def connect_to_db():
         port=3306,
         user='root',
         password='1234',
-        database='finchatbot',
+        database='test',
         cursorclass=pymysql.cursors.DictCursor
     )
     return conn
@@ -24,27 +25,22 @@ def connect_to_db():
 def budget_data():
     conn = connect_to_db()
     cursor = conn.cursor()
+    
+    budget_query = "SELECT budget FROM userbudget;" 
+    cursor.execute(budget_query)
+    Budget = cursor.fetchone()
+    
+    df=graph1.load_data()
+    Spent=graph1.calculate_current_month_total_expense(df)
 
-    try:
-        # 예산과 총 소비금액 가져오기
-        cursor.execute('SELECT SUM(Budget) as Budget, SUM(Spent) as Spent FROM budget_data')
-        result = cursor.fetchone()  # 결과 가져오기
 
-        Budget = result['Budget'] if result['Budget'] else 0
-        Spent = result['Spent'] if result['Spent'] else 0
+    # 예산 사용률 계산
+    budget_percentage = (Spent / Budget) * 100 if Budget > 0 else 0
 
-        # 예산 사용률 계산
-        budget_percentage = (Spent / Budget) * 100 if Budget > 0 else 0
-
-        return Budget, Spent, budget_percentage
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return None, None, None
-
-    finally:
-        cursor.close()
-        conn.close()
+    return Budget, Spent, budget_percentage
+    
+    cursor.close()
+    conn.close()
 
 
 

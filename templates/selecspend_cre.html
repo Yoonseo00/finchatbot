@@ -87,19 +87,18 @@
             <div class="chat-body" id="chatBody">
                 <div class="chat-message">한 달에 소비를 어느 정도 하시나요?</div>
                 <div class="chat-message">
-                    <form action="/process_response" method="POST">
-                        <label for="spending">한 달 소비 금액 선택:</label>
-                        <select name="spending" id="spending">
-                            <option value="choose" selected>-----선택-----</option>
-                            <option value="under_500000">50만원 이하</option>
-                            <option value="500001_to_1000000">50만원 초과 100만원 이하</option>
-                            <option value="1000001_to_1500000">100만원 초과 150만원 이하</option>
-                            <option value="over_1500000">150만원 초과</option>
+                    <form action="/filter_cards1" method="POST">
+                        <label for="card_amount">한 달 소비 금액 선택:</label>
+                        <select id="card_amount" name="card_amount">
+                            <option value="under_300000">30만원 미만</option>
+                            <option value="300000_400000">30만원 이상 40만원 미만</option>
+                            <option value="400000_500000">40만원 이상 50만원 미만</option>
+                            <option value="over_500000">50만원 이상</option>
                         </select>
+                        <input type="submit" value="선택완료">
                     </form>
                 </div>
                 <div class="options">
-                    <button onclick="window.location.href='/recom1'">선택을 완료했어요.</button>
                     <button onclick="goBack()">이전 화면으로 돌아가기</button>
                 </div>
             </div>
