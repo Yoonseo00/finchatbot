@@ -3,7 +3,7 @@
 
 {% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
     <a name="소비분석"></a>
-    <h1 class="section-title">[최근 3개월 소비 분석]</h1>
+    <h2 class="section-title">[최근 3개월 소비 분석]</h2>
     <hr>
 
     <div class="graph-container">
@@ -52,7 +52,7 @@
         {% endfor %}
     </div>
 
-    <h1 class="section-title">[연령대별 평균 소비 금액과 이번 달 소비 금액 비교]</h1>
+    <h2 class="section-title">[연령대별 평균 소비 금액과 이번 달 소비 금액 비교]</h2>
     <form method="post" class="age-selection-form">
         <label for="age_group">연령대 선택:</label>
         <select name="age_group" id="age_group">
@@ -90,6 +90,8 @@
         </ul>
         {% endif %}
     </div>
+
+    
 
 {% endblock %}
 

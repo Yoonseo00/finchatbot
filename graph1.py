@@ -128,9 +128,10 @@ def generate_graph(df):
     labels = list(category_avg.keys())
     values = list(category_avg.values())
 
+
     # 막대 그래프를 그립니다.
     plt.figure(figsize=(10, 6))
-    plt.bar(labels, values)
+    plt.bar(labels, values, color=['#66b3ff'])
     plt.xlabel('카테고리')
     plt.ylabel('평균 소비 금액')
     plt.title('카테고리별 평균 소비 금액 (최근 3개월)')
@@ -208,14 +209,16 @@ def generate_comparison_graph(age_category_data, current_month_data):
         [p - bar_width / 2 for p in bar_positions],
         age_category_avg,
         bar_width,
-        label='연령대별 평균 소비금액'
+        label='연령대별 평균 소비금액',
+        color=['#ff9999']
     )
 
     plt.bar(
         [p + bar_width / 2 for p in bar_positions],
         current_month_avg,
         bar_width,
-        label='이번 달 소비금액'
+        label='이번 달 소비금액',
+        color=['#66b3ff']
     )
 
     plt.xlabel('카테고리')

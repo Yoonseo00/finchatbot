@@ -7,25 +7,25 @@ body {
 }
 
 .top-bar, .bottom-bar{
-    height: 50px;
+    height: 60px;
 }
 
 /* 상단바 스타일링 */
 .top-bar {
-    background-color: #a6a6a6;
+    background-color: rgb(236, 236, 236);
     padding: 10px;
     display: flex;
     align-items: center;
 }
 
-.top-bar h1 {
+.top-bar h2 {
     color: #000000;
     margin:0;
 }
 
 /* 하단바 스타일링 */
 .bottom-bar {
-    background-color: #a6a6a6;
+    background-color: rgb(236, 236, 236);
     color: #000000;
     position: fixed;
     bottom: 0;
@@ -67,12 +67,11 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-left: 20px; /* 그래프와 테이블 사이의 간격 조정 */
-    width:100%
 }
 
 /* 월별 총 소비 테이블 */
 .monthly-summary table {
-    width: 70%;
+    width: 80%;
     border-collapse: collapse;
     margin: 20px 0;
     background-color: #fff; /* 테이블 배경색 추가 */
@@ -81,13 +80,14 @@ body {
 }
 
 .monthly-summary th, .monthly-summary td {
-    padding: 8px;
+    padding: 13px;
     text-align: center;
     border: 1px solid #ddd;
+    font-size: 20px;
 }
 
 .monthly-summary th {
-    background-color: #007BFF; /* 파란색 배경 */
+    background-color: rgb(11, 80, 183); /* 파란색 배경 */
     color: #fff;
 }
 
@@ -331,17 +331,6 @@ a:hover {
     margin-top: 20px;
 }
 
-.badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: red;
-    color:white;
-    border-radius: 50%;
-    padding: 10px;
-    font-weight: bold;
-    font-size: 25px;
-}
 
 
 

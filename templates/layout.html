@@ -10,7 +10,7 @@
 
 <body>
     <header class="top-bar">
-        <h1>{% block header_content %}기본 헤더{% endblock %}</h1>
+        <h2>{% block header_content %}기본 헤더{% endblock %}</h2>
     </header>
     
     <main class="content-container">
@@ -26,7 +26,18 @@
     <div class="bell-icon-container">
         <a href="/alarm" class="bell-icon">
             <img src="../static/img/bell.png" alt="과소비알리미" style="width: 110px; height: 110px; border-radius: 50%;">
-            <div class="badge {% if badge_notification %}block{% else %}none{% endif %}">!</div>
+            <div class="badge" style="
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: red;
+                color:white;
+                border-radius: 50%;
+                padding: 10px;
+                display: {% if badge_notification %} block {% else %} none {% endif %};
+                font-weight: bold;
+                font-size: 25px;"
+            >!</div>
         </a>
     </div>
 
