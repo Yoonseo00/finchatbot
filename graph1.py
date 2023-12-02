@@ -229,7 +229,3 @@ def generate_comparison_graph(age_category_data, current_month_data):
     img.seek(0)
     graph_url = base64.b64encode(img.getvalue()).decode()
     return [graph_url]
-    
-    
-    
-

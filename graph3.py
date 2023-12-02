@@ -10,25 +10,18 @@ import graph1
 
 app = Flask(__name__)
 
-def connect_to_db():
-    # MySQL 데이터베이스 연결 설정
-    conn = pymysql.connect(
-        host='127.0.0.1',
-        port=3306,
-        user='root',
-        password='1234',
-        database='test',
-        cursorclass=pymysql.cursors.DictCursor
-    )
+def connectsql():
+    conn = pymysql.connect(host='localhost', user = 'root', passwd = '1234', db = 'test', charset='utf8')
     return conn
 
 def budget_data():
-    conn = connect_to_db()
+    conn = connectsql()
     cursor = conn.cursor()
     
-    budget_query = "SELECT budget FROM userbudget;" 
+    budget_query = "SELECT budget FROM budget;" 
     cursor.execute(budget_query)
-    Budget = cursor.fetchone()
+    budget_tuple = cursor.fetchone()
+    Budget = budget_tuple[0] if budget_tuple else 0
     
     df=graph1.load_data()
     Spent=graph1.calculate_current_month_total_expense(df)

@@ -12,6 +12,7 @@ import graph3
 import consume_report
 import advicee
 import counsell
+import alarm
 
 def connectsql():
     conn = pymysql.connect(host='localhost', port=3306, user = 'root', passwd = '1234', db = 'test', charset='utf8')
@@ -22,19 +23,12 @@ app.secret_key = 'sample_secret'
 
 socketio=SocketIO(app)
 
-#임시(페이지 이동을 위한 페이지)
-@app.route('/main')
-def Main():
-    return render_template('Main.html')
-
-#로그아웃
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    return redirect(url_for(''))
+    return redirect(url_for('login'))
 
-#로그인
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         userid = request.form['id']
@@ -49,25 +43,101 @@ def login():
         data = cursor.fetchall()
         cursor.close()
         conn.close()
+
+        for row in data:
+            data = row[0]
+
+        if data:
+            session['username'] = request.form['id']
+
+            # 사용자의 목표 예산 여부 확인
+            conn = connectsql()
+            cursor = conn.cursor()
+            query = "SELECT * FROM budget WHERE username = %s"
+            cursor.execute(query, (session['username'],))
+            budget_data = cursor.fetchall()
+            cursor.close()
+            conn.close()
+
+            if budget_data:
+                return redirect(url_for('set_budget'))
+            else:
+                return redirect(url_for('goal1'))
+        else:
+            return render_template('loginError.html')
+    else:
+        return render_template('login.html')
+
+
+@app.route('/goal1')
+def goal1():
+    if 'username' in session:
+        userid = session['username']
+        return render_template('goal1.html', logininfo = userid)
+    else:
+        return render_template('loginError.html')
+
+@app.route('/goal2')
+def goal2():
+    if 'username' in session:
+        userid = session['username']
+        return render_template('goal2.html', logininfo = userid)
+    else:
+        return render_template('loginError.html')
+
+@app.route('/graph', methods=['GET','POST'])
+def set_budget():
+    if request.method == 'POST':
+        if 'username' in session:
+            username = session['username']
+            conn = connectsql()
+            cursor = conn.cursor()
+            query = "SELECT * FROM budget WHERE username = %s"
+            cursor.execute(query, (username,))
+            data = cursor.fetchall()
+            cursor.close()
+            conn.close()
         
         for row in data:
             data = row[0]
         
         if data:
-            session['username'] = request.form['id']
-            session['password'] = request.form['pw']
-            return render_template('loginSuccess.html', logininfo = logininfo)
+            Budget, Spent, budget_percentage=graph3.budget_data()
+            circle_graph=graph3.display_budget()
+            return render_template ('budget.html', circle_graph=circle_graph, Budget=Budget, Spent=Spent, budget_percentage=budget_percentage, logininfo = userid)
         else:
-            return render_template('loginError.html')
-    else:
-        return render_template ('login.html')
+            userid = session['username']
+            setbudget= request.form['budgetAmount']
 
-#회원가입
+            conn = connectsql()
+            cursor = conn.cursor() 
+            query = "INSERT INTO budget (username, budget) values (%s, %s)"
+            value = (userid, setbudget)
+            cursor.execute(query, value)
+            conn.commit()
+            cursor.close()
+            conn.close()
+            Budget, Spent, budget_percentage=graph3.budget_data()
+            circle_graph=graph3.display_budget()
+            return render_template('budget.html', circle_graph=circle_graph, Budget=Budget, Spent=Spent, budget_percentage=budget_percentage)
+    else:
+        if 'username' in session:
+            userid = session['username']
+            Budget, Spent, budget_percentage=graph3.budget_data()
+            circle_graph=graph3.display_budget()
+            return render_template ('budget.html', circle_graph=circle_graph, Budget=Budget, Spent=Spent, budget_percentage=budget_percentage, logininfo = userid)
+        else:
+            return render_template ('Error.html')
+
 @app.route('/regist', methods=['GET', 'POST'])
 def regist():
     if request.method == 'POST':
         userid = request.form['id']
         userpw = request.form['pw']
+        userpw_confirm = request.form['pw_confirm']
+
+        if userpw != userpw_confirm:
+            return render_template('registpw.html')
 
         conn = connectsql()
         cursor = conn.cursor()
@@ -84,8 +154,10 @@ def regist():
             data = cursor.fetchall()
             conn.commit()
             return render_template('registSuccess.html')
+        cursor.close()
+        conn.close()
     else:
-        return render_template('regist.html')
+        return render_template('regist.html')        
 
 #소비내역 추가 페이지
 @app.route('/addspend', methods=['GET', 'POST'])
@@ -118,44 +190,72 @@ def addspend():
         else:
             return render_template ('Error.html')
 
-#상세 소비내역 페이지
-@app.route('/spendlist')
-def SpendList():
-    return render_template("SpendList.html")
+@app.route('/spendlist', methods=['GET', 'POST'])
+def spendlist():
+    if 'username' in session:
+        username = session['username']
+        conn = connectsql()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        query = "SELECT username, add_date, add_category, add_price, add_place FROM addspend WHERE username = %s ORDER BY add_date DESC"
+        cursor.execute(query, (username,))
+        data_list = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
 
+        conn = connectsql()
+        cursor = conn.cursor() 
+        query = "SELECT SUM(add_price) AS totalsum FROM addspend WHERE username = %s"
+        cursor.execute(query, (username,))
+        total_price = cursor.fetchall()[0][0]
 
-#목표예산이 없습니다 화면
-@app.route('/')
-def main():
-    return render_template('goal1.html')
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return render_template('SpendList.html', datalist = data_list, total_price=total_price, logininfo=username)
+    else:
+        return render_template ('Error.html')
+    
+@app.route('/select', methods=['GET', 'POST'])
+def select():
+    if request.method == 'POST':
+        if 'username' in session:
+            username = session['username']
+            category = request.form['category']
 
-#목표예산 등록하면 이동
-@app.route('/goal2')
-def goal_registration():
-    return render_template('goal2.html')
+            conn = connectsql()
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-#목표예산 등록
-@app.route('/set_budget', methods=['POST'])
-def set_budget():
-    budget = request.form.get('budgetAmount')
+            query = "SELECT username, add_date, add_category, add_price, add_place FROM addspend WHERE username = %s AND add_category = %s ORDER BY add_date DESC"
+            cursor.execute(query, (username, category))
+            data_list = cursor.fetchall()
+            conn.commit()
+            cursor.close()
+            conn.close()
 
-    # 여기에서 budget를 저장하거나 처리하는 로직을 추가할 수 있습니다.
-    # 예를 들어, 데이터베이스에 저장하거나 세션에 저장할 수 있습니다.
+            conn = connectsql()
+            cursor = conn.cursor(pymysql.cursors.DictCursor) 
+            query = "SELECT SUM(add_price) AS sum FROM addspend WHERE username = %s AND add_category = %s"
+            cursor.execute(query, (username, category))
+            result = cursor.fetchall()
+            if result and result[0]['sum'] is not None:
+                price = result[0]['sum']
+            else:
+                price = 0
+            cursor.close()
+            conn.close()
 
-    message = "목표 예산이 설정되었습니다."
-    return render_template('goal2.html', message=message, budget=budget)  
+            return render_template('select.html', datalist=data_list, category=category, price=price, logininfo=username)
 
-#목표예산 등록 시 원그래프 화면
-@app.route('/graph')
-def circle_graph():
-
-    Budget, Spent, budget_percentage=graph3.budget_data()
-    circle_graph=graph3.display_budget()
-    return render_template('budget.html', circle_graph=circle_graph, Budget=Budget, Spent=Spent, budget_percentage=budget_percentage)
-
+        else:
+            return render_template('Error.html')  # 세션에 사용자 이름이 없는 경우 에러 템플릿 렌더링
+    else:
+        return render_template('Error.html')  # GET 요청의 경우 에러 템플릿 렌더링
 
 @app.route('/index', methods=['GET', 'POST'])
 def graph():
+
+    badge_notification=alarm.badge()
 
     df = graph1.load_data()
     category_avg=graph1.category_avg_for_last_3_months(df)
@@ -190,7 +290,7 @@ def report():
     selected_year = int(selected_year) if selected_year else 0
     selected_month = int(selected_month) if selected_month else 0
 
-    df = graph1.load_data('C:/finchatbot/exdata.csv')
+    df = graph1.load_data()
 
     selected_month_data = consume_report.monthly_spending(df, selected_year, selected_month)
     
@@ -219,7 +319,7 @@ def report():
 @app.route('/advice', methods=['GET'])
 def advice():
 
-    df = graph1.load_data('C:/finchatbot/exdata.csv')
+    df = graph1.load_data()
 
     current_month_data=graph1.calculate_current_month_total_expense(df)
     current_category_data=graph1.category_consume_for_current_month(df)
@@ -238,7 +338,7 @@ def generate_and_emit_advice_response(user_message, current_month_data, current_
 
 @app.route('/counsel')
 def counsel():
-    initial_message = "안녕하세요. 저는 finchatbot이라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다. 또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요. 최선을 다해 도움을 드리도록 하겠습니다!"
+    initial_message = "안녕하세요. 저는 머니버디라고 합니다. 소비에 대한 분석과 관련된 지식과 정보를 제공할 수 있으며, 다양한 소비내역에 대해 분석할 수 있습니다. 또한 재테크와 절약에 대한 조언도 할 수 있으니 어떤 질문이든지 제게 물어보세요. 최선을 다해 도움을 드리도록 하겠습니다!"
     return render_template('counsel.html', initial_message=initial_message)
 
 
@@ -292,7 +392,8 @@ def calculate_similarity(embedding1, embedding2):
 
 # 카드 저장 함수
 def save_to_mysql1(user_choice):
-    cursor = db.cursor()
+    conn = connectsql()
+    cursor = conn.cursor()
     
     delete_sql = "DELETE FROM cre_data"
     cursor.execute(delete_sql)
@@ -321,10 +422,11 @@ def save_to_mysql1(user_choice):
         val = (card_name, card_content, card_embedding)
         cursor.execute(sql, val)
 
-    db.commit()
+    conn.commit()
     
 def save_to_mysql2(user_choice):
-    cursor = db.cursor()
+    conn = connectsql()
+    cursor = conn.cursor()
     
     delete_sql = "DELETE FROM chk_data"
     cursor.execute(delete_sql)
@@ -353,7 +455,7 @@ def save_to_mysql2(user_choice):
         val = (card_name, card_content, card_embedding)
         cursor.execute(sql, val)
 
-    db.commit()
+    conn.commit()
 
 
 # 카드 필터링 및 저장 후 recomcard_cre.html로 이동
@@ -386,8 +488,8 @@ def filter_cards2():
 def recommend_cards1():
     if request.method == 'POST':
         user_preference = request.form['user_preference']
-        
-        cursor = db.cursor()
+        conn = connectsql()
+        cursor = conn.cursor()
 
         # MySQL에서 저장된 데이터 가져오기
         sql = "SELECT * FROM cre_data"
@@ -419,8 +521,8 @@ def recommend_cards1():
 def recommend_cards2():
     if request.method == 'POST':
         user_preference = request.form['user_preference']
-        
-        cursor = db.cursor()
+        conn = connectsql()
+        cursor = conn.cursor()
 
         # MySQL에서 저장된 데이터 가져오기
         sql = "SELECT * FROM chk_data"
@@ -448,7 +550,18 @@ def recommend_cards2():
 
         return render_template('recomcard_chk.html', recommendation=best_match, user_input=user_preference, matched_content=matched_content)
 
-        
+#과소비알림페이지
+@app.route('/alarm')
+def Alarm():
+
+    badge_notification=alarm.badge()
+
+    if badge_notification:
+        message = "<p>해당 월의 목표 예산을 초과했습니다.</p><p>챗봇에게 조언을 구해보세요!</p>"
+    else:
+        message = "예산에 맞게 아껴쓰고 있어요.\n궁금한 점이 있다면 챗봇에게 조언을 구해보세요!"
+
+    return render_template("Alarm.html", badge_notification=badge_notification, message=message)        
 
 
 if __name__ == '__main__':

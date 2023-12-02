@@ -80,6 +80,35 @@
             justify-content: center;
             text-decoration: none;
         }
+        .badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: red;
+                color:white;
+                border-radius: 50%;
+                padding: 10px;
+                display: {% if badge_notification %}block{% else %}none{% endif %};
+                font-weight: bold;
+                font-size: 25px;
+            }
+            .bell-icon-container {
+                position: fixed;
+                bottom: 240px; /* 원하는 위치로 조절 */
+                right: 35px; /* 원하는 위치로 조절 */
+                z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
+            }
+
+            .bell-icon {
+                width: 110px; /* 아이콘의 크기 조절 */
+                height: 110px; /* 아이콘의 크기 조절 */
+                border-radius: 50%; /* 동그란 모양으로 만들기 */
+                background-color: rgb(253, 253, 217); /* 배경 색상 설정 */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+            }
     </style>
 </head>
 <body>
@@ -120,6 +149,12 @@
     <div class="chat-icon-container">
         <a href="/chat" class="chat-icon">
             <img src="../static/img/chatbot.png" alt="챗봇" style="width: 110px; height: 110px; border-radius: 50%;">
+        </a>
+    </div>
+    <div class="bell-icon-container">
+        <a href="/alarm" class="bell-icon">
+            <img src="../static/img/bell.png" alt="과소비알리미" style="width: 110px; height: 110px; border-radius: 50%;">
+            <div class="badge">!</div>
         </a>
     </div>
 

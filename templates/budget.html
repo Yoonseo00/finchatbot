@@ -26,7 +26,6 @@
                 right: 35px; /* 원하는 위치로 조절 */
                 z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
             }
-            
             .chat-icon {
                 width: 110px; /* 아이콘의 크기 조절 */
                 height: 110px; /* 아이콘의 크기 조절 */
@@ -37,7 +36,6 @@
                 justify-content: center;
                 text-decoration: none;
             }
-
             .badge {
                 position: absolute;
                 top: 0;
@@ -50,20 +48,38 @@
                 font-weight: bold;
                 font-size: 25px;
             }
+            .bell-icon-container {
+                position: fixed;
+                bottom: 240px; /* 원하는 위치로 조절 */
+                right: 35px; /* 원하는 위치로 조절 */
+                z-index: 1000; /* 다른 요소 위에 표시되도록 설정 */
+            }
+
+            .bell-icon {
+                width: 110px; /* 아이콘의 크기 조절 */
+                height: 110px; /* 아이콘의 크기 조절 */
+                border-radius: 50%; /* 동그란 모양으로 만들기 */
+                background-color: rgb(253, 253, 217); /* 배경 색상 설정 */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+            }            
         </style>
     </head>
     <body>
         <header class="top-bar">
             <div class="container">
                 <a href ="/addspend"><img src="../static/img/plus.png" width="70" height="70"></a>  
+                <button name="logout-button", onclick="location.href='/logout'">로그아웃</button>
             </div>
         </header>
         <main>
             <div class="goal">
-                <h4>목표 예산: {{ Budget }} 원</h4>
-                <h4>총 소비 금액: {{ Spent }} 원</h4>
+                <h3>목표 예산: {{ Budget }} 원</h3>
+                <h3>총 소비 금액: {{ Spent }} 원</h3>
                 <img src="data:image/png;base64,{{ circle_graph }}" alt="Budget and Spent Chart">
-                <h4>목표 예산의 {{ budget_percentage }}%를 사용했습니다.</h4>
+                <h3>목표 예산의 {{ budget_percentage }}%를 사용했습니다.</h3>
             </div>
         </main>
 

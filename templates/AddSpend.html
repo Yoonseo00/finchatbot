@@ -1,25 +1,21 @@
 {% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
 {% block header_content %}소비내역 추가{% endblock %}
-
 {% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
-
-
-        <li>접속자 : <strong>{{logininfo}}</strong> 님</li>
    
     <form class="form-signin" method="POST" action="/addspend"> 
         <label for="date">날짜:</label>
         <input type="date" name="date" class="form-control" required autofocus><br>
-
         <label for="category">카테고리:</label>
         <select name="category" onformchange="this.form.submit()">
             <option value="식비" name="food">식비</option>
-                <option value="카페" name="cafe">카페</option>
-                <option value="쇼핑" name="shopping">쇼핑</option>
-                <option value="문화" name="culture">문화</option>
-                <option value="교통" name="traffic">교통</option>
-                <option value="여행" name=travel>여행</option>
-                <option value="의료" name="medical">의료</option>
-            </select>
+            <option value="쇼핑" name="shopping">쇼핑</option>
+            <option value="문화" name="culture">문화</option>
+            <option value="교육" name="education">교육</option>
+            <option value="교통" name="traffic">교통</option>
+            <option value="통신" name="telecom">통신</option>
+            <option value="여행" name=travel>여행</option>
+            <option value="의료" name="medical">의료</option>
+        </select>
         <br><br>
    
         <label for="price">소비금액:</label>

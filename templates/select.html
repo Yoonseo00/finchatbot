@@ -15,9 +15,8 @@
 
 	<div class="container">
 	<br><h1><strong><a style="color:#110957;">상세 소비내역</a></strong></h1>
-
 	<form class="form-signin" method="POST" action="/select"> 
-        <select name="category" onformchange="this.form.submit()">
+		<select name="category" onformchange="this.form.submit()">
             <option value="식비" name="food">식비</option>
             <option value="쇼핑" name="shopping">쇼핑</option>
             <option value="문화" name="culture">문화</option>
@@ -27,9 +26,8 @@
             <option value="여행" name=travel>여행</option>
             <option value="의료" name="medical">의료</option>
         </select>
-        <input type="submit" value="적용"> 총 합계: {{total_price}} 원
-    </form>
-
+		<input type="submit" value="적용"> 카테고리: {{ category }} <span style="margin-right: 10px;"></span> 합계: {{ price }} 원
+	</form>
 	<table class="table table-hover">
 		<thead>
 		<tr>
