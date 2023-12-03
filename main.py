@@ -157,7 +157,7 @@ def regist():
         cursor.close()
         conn.close()
     else:
-        return render_template('regist.html')        
+        return render_template('regist.html')       
 
 #소비내역 추가 페이지
 @app.route('/addspend', methods=['GET', 'POST'])
@@ -557,11 +557,13 @@ def Alarm():
     badge_notification=alarm.badge()
 
     if badge_notification:
-        message = "<p>해당 월의 목표 예산을 초과했습니다.</p><p>챗봇에게 조언을 구해보세요!</p>"
+        message = "해당 월의 목표 예산을 초과했습니다.\n\n챗봇에게 조언을 구해보세요!"
+        html_message = message.replace('\n', '<br>')
     else:
-        message = "예산에 맞게 아껴쓰고 있어요.\n궁금한 점이 있다면 챗봇에게 조언을 구해보세요!"
+        message = "예산에 맞게 아껴쓰고 있어요.\n\n궁금한 점이 있다면 챗봇에게 조언을 구해보세요!"
+        html_message = message.replace('\n', '<br>')
 
-    return render_template("Alarm.html", badge_notification=badge_notification, message=message)        
+    return render_template("Alarm.html", badge_notification=badge_notification, html_message=html_message)        
 
 
 if __name__ == '__main__':

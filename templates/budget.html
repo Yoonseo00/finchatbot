@@ -16,10 +16,18 @@
             justify-content: center; /* 수직 가운데 정렬 */
             width: 400px; /* 가로 너비 */
             margin: 50px auto; /* 수평 가운데 정렬 */}
-            .img {text-align: center;}
-            .img2, .img4 {display: inline-block;}
-            .img2 {float: left;}
-            .img4 {float: right;}
+            .goal img {
+            margin-top: -10px;
+            }
+            .goal h3 {
+            margin: 5px 0; /* 글자 간격 조절 */
+            margin-bottom: 5px;
+            }
+            .goal h2 {
+            margin-top: -10px;
+            }
+            .goal h2 span {
+            background-color: #ffe600;}
             .chat-icon-container {
                 position: fixed;
                 bottom: 120px; /* 원하는 위치로 조절 */
@@ -63,22 +71,31 @@
                 align-items: center;
                 justify-content: center;
                 text-decoration: none;
-            }            
+            }
+            .logout-container {
+                margin-left: auto; /* 다른 요소들을 왼쪽으로 밀어내어 오른쪽 정렬 */
+                display: flex; /* 요소를 가로로 나열하기 위해 */
+                align-items: center; /* 수직 정렬 */
+                margin-right: 0;
+            }             
         </style>
     </head>
     <body>
         <header class="top-bar">
             <div class="container">
-                <a href ="/addspend"><img src="../static/img/plus.png" width="70" height="70"></a>  
-                <button name="logout-button", onclick="location.href='/logout'">로그아웃</button>
+                <a href ="/addspend"><img src="../static/img/plus.png" width="70" height="70"></a> 
+                <h2>예산 및 소비 현황</h2> 
             </div>
+                <div class="logout-container">
+                    <button name="logout-button" onclick="location.href='/logout'">로그아웃</button>
+                </div>
         </header>
         <main>
             <div class="goal">
                 <h3>목표 예산: {{ Budget }} 원</h3>
                 <h3>총 소비 금액: {{ Spent }} 원</h3>
                 <img src="data:image/png;base64,{{ circle_graph }}" alt="Budget and Spent Chart">
-                <h3>목표 예산의 <strong>{{ budget_percentage }}%</strong>를 사용했습니다.</h3>
+                <h2>목표 예산의 <span>{{ budget_percentage }}%</span>를 사용했습니다.</h2>
             </div>
         </main>
 

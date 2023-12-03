@@ -1,28 +1,79 @@
 {% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
 {% block header_content %}소비내역 추가{% endblock %}
-{% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
-   
-    <form class="form-signin" method="POST" action="/addspend"> 
+
+{% block content %}
+    <style>
+        form {
+        max-width: 450px;
+        margin: 0 auto;
+        margin-top: 30px;
+        padding: 30px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        height: 70vh;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        input,
+            select {
+            width: 100%;
+            padding: 8px;
+            height: 60px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+
+<!-- 레이아웃의 content 블록을 오버라이드합니다 -->
+    <form action = "http://localhost:5000/result" method="post">
         <label for="date">날짜:</label>
-        <input type="date" name="date" class="form-control" required autofocus><br>
+        <input type="date" id="date" required><br><br>
+
         <label for="category">카테고리:</label>
-        <select name="category" onformchange="this.form.submit()">
-            <option value="식비" name="food">식비</option>
-            <option value="쇼핑" name="shopping">쇼핑</option>
-            <option value="문화" name="culture">문화</option>
-            <option value="교통" name="traffic">교통</option>
-            <option value="여행" name=travel>여행</option>
-            <option value="의료" name="medical">의료</option>
-        </select>
+        
+        
+            <select>
+                <option value="food">식비</option>
+                <option value="cafe">카페</option>
+                <option value="shopping">쇼핑</option>
+                <option value="culture">문화</option>
+                <option value="traffic">교통</option>
+                <option value="travel">여행</option>
+                <option value="medical">의료</option>
+            </select>
         <br><br>
-   
+
         <label for="price">소비금액:</label>
-        <input type="number" name="price" class="form-control" placeholder="숫자만 입력하세요" required>원<br><br>
+        <input type="number" id="price" placeholder="숫자만 입력하세요" required style="font-size:16px"> &nbsp원<br><br>
 
         <label for="place">사용처:</label>
-        <input type="text" name="place" class="form-control" required><br><br>
+        <input type="text" id="place" required><br><br>
 
-        <input type="submit" value="추가하기" onclick="alert('등록되었습니다.')">
+        <input type="submit" value="추가하기" onclick="alert('등록되었습니다.')" history.go(-1)>
     </form>
 
 {% endblock %}

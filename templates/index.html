@@ -1,6 +1,10 @@
 {% extends "layout.html" %}  <!-- 레이아웃 템플릿을 확장합니다 -->
-{% block header_content %}평균 소비{% endblock %}
-
+{% block header_content %}
+    <h2>평균 소비</h2>
+    <div class="logout-container" style="margin-left: auto; display: flex; align-items: center; margin-right: 0;">
+        <button name="logout-button" onclick="location.href='/logout'">로그아웃</button>
+    </div>
+{% endblock %}
 {% block content %}  <!-- 레이아웃의 content 블록을 오버라이드합니다 -->
     <a name="소비분석"></a>
     <h2 class="section-title">[최근 3개월 소비 분석]</h2>
@@ -44,7 +48,7 @@
 
 
     <div class="exceeded-category-text">
-        <h2 class="section-title">초과 지출</h2>
+        <h2 class="section-title"><span>&nbsp &nbsp 초과 지출 &nbsp &nbsp </span></h2>
         {% for category, excess in exceeded_categories.items() %}
         <li>
             이번 달 '{{ category }}' 카테고리에 최근 3개월 평균 소비보다 {{ '%.1f'|format(excess) }}원 초과했습니다.
@@ -76,19 +80,21 @@
     </div>
     {% endif %}
 
-    <div class="savings-text">
-        {% if comparison_graph and not exceeded_categories_avg %}
-        <p>또래보다 아껴쓰고 있어요!</p>
-        {% elif exceeded_categories_avg %}
-        <h2 class="section-title">{{ age_group }}와 비교한 초과 지출 카테고리</h2>
-        <ul>
-            {% for category, excess in exceeded_categories_avg.items() %}
-                <li>
-                    이번 달 '{{ category }}' 카테고리에 {{ age_group }}보다 {{ '%.1f'|format(excess) }}원 더 사용했습니다.
-                </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    <div class="gr">
+        <div class="savings-text">
+            {% if comparison_graph and not exceeded_categories_avg %}
+            <h2><span>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp 또래보다 아껴쓰고 있어요! &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span></h2>
+            {% elif exceeded_categories_avg %}
+            <h2 class="section-title"><span>&nbsp &nbsp {{ age_group }}와 비교한 초과 지출 카테고리 &nbsp &nbsp </span></h2>
+            <ul>
+                {% for category, excess in exceeded_categories_avg.items() %}
+                    <li>
+                        이번 달 '{{ category }}' 카테고리에 {{ age_group }}보다 {{ '%.1f'|format(excess) }}원 더 사용했습니다.
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
     </div>
 
     

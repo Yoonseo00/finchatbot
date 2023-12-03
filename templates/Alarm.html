@@ -19,8 +19,12 @@
 
         .message-container {
             text-align: center;
-            margin-top: 200px; /* 상단 여백 조정 */
+            margin-top: 150px; /* 상단 여백 조정 */
             font-size: 22px; /* 폰트 크기 조정 */
+        }
+
+        h3 {
+            margin-bottom: 10px;
         }
 
     </style>
@@ -30,7 +34,7 @@
 </div>
 
 <div class="message-container">
-    <h3>{{ message | safe }}</h3>
+    <h3>{{ html_message | safe }}</h3>
 </div>
 
 

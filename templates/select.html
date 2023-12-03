@@ -10,13 +10,15 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
 		
 		<title>상세 소비내역</title>
+		<link rel="stylesheet" href="../static/css/styles2.css">
 	</head>
 	<body>
 
 	<div class="container">
-	<br><h1><strong><a style="color:#110957;">상세 소비내역</a></strong></h1>
+	<br><h2><strong><div style="color:#000000;">상세 소비내역</strong></h2>
+
 	<form class="form-signin" method="POST" action="/select"> 
-		<select name="category" onformchange="this.form.submit()">
+        <select name="category" onformchange="this.form.submit()">
             <option value="식비" name="food">식비</option>
             <option value="쇼핑" name="shopping">쇼핑</option>
             <option value="문화" name="culture">문화</option>
@@ -50,5 +52,22 @@
 		</tbody>
 	</table>
 	</div>
+	<footer class="bottom-bar">
+		<nav class="button">
+			<a href="/spendlist">
+			<img src="../static/img/menu.png" alt="메뉴">
+			</a>
+		</nav>
+		<nav class="button">
+			<a href="/graph">
+			<img src="../static/img/home.png" alt="홈">
+			</a>
+		</nav>
+		<nav class="button">
+			<a href="/index">
+				<img src="../static/img/graph.png" alt="그래프">
+			</a>
+		</nav>
+	</footer>
 	</body>
 </html>
