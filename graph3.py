@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, session, request,render_template
 import pandas as pd
 import matplotlib.pyplot as plt
 from io import BytesIO
@@ -15,13 +15,16 @@ def connectsql():
     return conn
 
 def budget_data():
-    conn = connectsql()
-    cursor = conn.cursor()
-    
-    budget_query = "SELECT budget FROM budget;" 
-    cursor.execute(budget_query)
-    budget_tuple = cursor.fetchone()
-    Budget = budget_tuple[0] if budget_tuple else 0
+    if 'username' in session:
+        username = session['username']  # 세션에서 사용자 이름을 가져옴
+        conn = connectsql()
+        cursor = conn.cursor()
+        query = "SELECT budget FROM budget WHERE username = %s"
+        cursor.execute(query, (username,))
+        budget = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        Budget = budget[0] if budget else 0
     
     df=graph1.load_data()
     Spent=graph1.calculate_current_month_total_expense(df)
@@ -31,10 +34,6 @@ def budget_data():
     budget_percentage = (Spent / Budget) * 100 if Budget > 0 else 0
 
     return Budget, Spent, budget_percentage
-    
-    cursor.close()
-    conn.close()
-
 
 
 def display_budget():
