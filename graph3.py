@@ -50,7 +50,7 @@ def display_budget():
     plt.rcParams['font.size'] = 13
 
     # 원 그래프 생성
-    fig, ax = plt.subplots(figsize=(7,7))
+    fig, ax = plt.subplots(figsize=(5,5))
 
     if remaining_budget == 0:
         # Budget-Spent가 음수이면서 이미 사용된 금액이 예산을 초과할 때

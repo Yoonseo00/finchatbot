@@ -15,7 +15,7 @@
             align-items: center; /* 수평 가운데 정렬 */
             justify-content: center; /* 수직 가운데 정렬 */
             width: 400px; /* 가로 너비 */
-            margin: 65px auto; /* 수평 가운데 정렬 */}
+            margin: 50px auto; /* 수평 가운데 정렬 */}
             .img {text-align: center;}
             .img2, .img4 {display: inline-block;}
             .img2 {float: left;}
@@ -78,7 +78,7 @@
                 <h3>목표 예산: {{ Budget }} 원</h3>
                 <h3>총 소비 금액: {{ Spent }} 원</h3>
                 <img src="data:image/png;base64,{{ circle_graph }}" alt="Budget and Spent Chart">
-                <h3>목표 예산의 {{ budget_percentage }}%를 사용했습니다.</h3>
+                <h3>목표 예산의 <strong>{{ budget_percentage }}%</strong>를 사용했습니다.</h3>
             </div>
         </main>
 
