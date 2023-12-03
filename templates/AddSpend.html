@@ -57,19 +57,17 @@
         <option value="식비" name="food">식비</option>
         <option value="쇼핑" name="shopping">쇼핑</option>
         <option value="문화" name="culture">문화</option>
-        <option value="교육" name="education">교육</option>
         <option value="교통" name="traffic">교통</option>
-        <option value="통신" name="telecom">통신</option>
         <option value="여행" name=travel>여행</option>
         <option value="의료" name="medical">의료</option>
     </select>
         <br><br>
 
         <label for="price">소비금액:</label>
-        <input type="number" id="price" placeholder="숫자만 입력하세요" required style="font-size:16px"> &nbsp원<br><br>
+        <input type="number" name="price" placeholder="숫자만 입력하세요" required style="font-size:16px"> &nbsp원<br><br>
 
         <label for="place">사용처:</label>
-        <input type="text" id="place" required><br><br>
+        <input type="text" name="place" required><br><br>
 
         <input type="submit" value="추가하기" onclick="alert('등록되었습니다.')" history.go(-1)>
     </form>
