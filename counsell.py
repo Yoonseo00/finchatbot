@@ -1,7 +1,7 @@
 import openai
 import re
 
-secret_key = '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'
+secret_key = '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'
 openai.api_key = secret_key
 
 previous_messages = []

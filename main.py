@@ -6,6 +6,7 @@ from transformers import BertTokenizer, BertModel
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import jsonify
+from flask_bcrypt import Bcrypt
 
 import graph1
 import graph3
@@ -21,6 +22,7 @@ def connectsql():
 app = Flask(__name__)
 app.secret_key = 'sample_secret'
 
+bcrypt = Bcrypt(app)
 socketio=SocketIO(app)
 
 @app.route('/logout')
@@ -28,34 +30,31 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
+# 로그인 라우트
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         userid = request.form['id']
         userpw = request.form['pw']
 
-        logininfo = request.form['id']
         conn = connectsql()
-        cursor = conn.cursor()
-        query = "SELECT * FROM users WHERE username = %s AND password = %s"
-        value = (userid, userpw)
-        cursor.execute(query, value)
-        data = cursor.fetchall()
-        cursor.close()
-        conn.close()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        for row in data:
-            data = row[0]
+        query = "SELECT * FROM users WHERE username = %s"
+        cursor.execute(query, (userid,))
+        user_data = cursor.fetchone()
 
-        if data:
-            session['username'] = request.form['id']
+        if bcrypt.check_password_hash(user_data['password'], userpw):
+            session['username'] = user_data['username']
 
-            # 사용자의 목표 예산 여부 확인
             conn = connectsql()
             cursor = conn.cursor()
+
+            # 사용자의 목표 예산 여부 확인 쿼리
             query = "SELECT * FROM budget WHERE username = %s"
             cursor.execute(query, (session['username'],))
             budget_data = cursor.fetchall()
+
             cursor.close()
             conn.close()
 
@@ -65,9 +64,8 @@ def login():
                 return redirect(url_for('goal1'))
         else:
             return render_template('loginError.html')
-    else:
-        return render_template('login.html')
 
+    return render_template('login.html')
 
 @app.route('/goal1')
 def goal1():
@@ -129,6 +127,7 @@ def set_budget():
         else:
             return render_template ('Error.html')
 
+MIN_PASSWORD_LENGTH = 8
 @app.route('/regist', methods=['GET', 'POST'])
 def regist():
     if request.method == 'POST':
@@ -136,24 +135,29 @@ def regist():
         userpw = request.form['pw']
         userpw_confirm = request.form['pw_confirm']
 
+        # 비밀번호 길이 체크
+        if len(userpw) < MIN_PASSWORD_LENGTH:
+            return render_template('shortpw.html')
+
         if userpw != userpw_confirm:
             return render_template('registpw.html')
-
+        
         conn = connectsql()
         cursor = conn.cursor()
         query = "SELECT * FROM users WHERE username = %s"
         value = userid
         cursor.execute(query, value)
-        data = (cursor.fetchall())
+        data = cursor.fetchall()
         if data:
             return render_template('registError.html') 
         else:
+            pw_hash = bcrypt.generate_password_hash(userpw).decode('utf-8')
             query = "INSERT INTO users (username, password) values (%s, %s)"
-            value = (userid, userpw)
+            value = (userid, pw_hash)
             cursor.execute(query, value)
             data = cursor.fetchall()
             conn.commit()
-            return render_template('registSuccess.html')
+            return render_template('registSuccess.html', pw_hash=pw_hash)
         cursor.close()
         conn.close()
     else:

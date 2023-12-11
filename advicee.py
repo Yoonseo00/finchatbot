@@ -1,6 +1,6 @@
 import openai
 
-secret_key = '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'
+secret_key = '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'
 openai.api_key = secret_key
 
 def generate_advice_response(user_message, current_month_data, current_category_data, current_exceed_category):
