@@ -135,12 +135,12 @@ def regist():
         userpw = request.form['pw']
         userpw_confirm = request.form['pw_confirm']
 
+        if userpw != userpw_confirm:
+            return render_template('registpw.html')
+
         # 비밀번호 길이 체크
         if len(userpw) < MIN_PASSWORD_LENGTH:
             return render_template('shortpw.html')
-
-        if userpw != userpw_confirm:
-            return render_template('registpw.html')
         
         conn = connectsql()
         cursor = conn.cursor()
